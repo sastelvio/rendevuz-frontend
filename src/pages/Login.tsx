@@ -8,6 +8,7 @@ import {
     TextField,
     Button,
     Grid,
+    Alert,
 } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -19,9 +20,11 @@ const Login = () => {
 
     const [username, setUserName] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
 
     const handleLogin = async () => {
-        // This is only a basic validation of inputs. Improve this as needed.
+        setError(""); // Reset error message
+        // Basic validation of inputs
         if (username && password) {
             try {
                 await dispatch(
@@ -30,11 +33,14 @@ const Login = () => {
                         password,
                     })
                 ).unwrap();
+                // Optionally, redirect the user after successful login
+                // navigate("/some-protected-route");
             } catch (e) {
                 console.error(e);
+                setError("Failed to login. Please check your credentials and try again.");
             }
         } else {
-            // TODO show an error message.
+            setError("Both username and password are required.");
         }
     };
 
@@ -66,7 +72,6 @@ const Login = () => {
                             value={username}
                             onChange={(e) => setUserName(e.target.value)}
                         />
-
                         <TextField
                             margin="normal"
                             required
@@ -76,11 +81,13 @@ const Login = () => {
                             label="Password"
                             type="password"
                             value={password}
-                            onChange={(e) => {
-                                setPassword(e.target.value);
-                            }}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
-
+                        {error && (
+                            <Alert severity="error" sx={{ mt: 2 }}>
+                                {error}
+                            </Alert>
+                        )}
                         <Button
                             fullWidth
                             variant="contained"

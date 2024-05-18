@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const Home = () => {
     const dispatch = useAppDispatch();
-    const navigate = useNavigate;
+    const navigate = useNavigate(); // Correção: Invocando useNavigate
 
     const basicUserInfo = useAppSelector((state) => state.auth.basicUserInfo);
     const userProfileInfo = useAppSelector((state) => state.auth.userProfileData);
@@ -15,15 +15,15 @@ const Home = () => {
         if (basicUserInfo) {
             dispatch(getUser(basicUserInfo.id));
         }
-    }, [basicUserInfo]);
+    }, [basicUserInfo, dispatch]); // Adicionando dispatch como dependência
 
     const handleLogout = async () => {
         try {
             await dispatch(logout()).unwrap();
             navigate("/login");
         } catch (e) {
-            //TODO add user friendly error handler
-            console.error(e)
+            // TODO: Adicionar um handler de erro amigável
+            console.error(e);
         }
     };
 
@@ -31,7 +31,7 @@ const Home = () => {
         <>
             <h1>Home</h1>
             <h4>name: {userProfileInfo?.firstName} {userProfileInfo?.lastName}</h4>
-            <Button variant="contained" sx={{ mt: 3, mb: 2}} onClick={handleLogout}>
+            <Button variant="contained" sx={{ mt: 3, mb: 2 }} onClick={handleLogout}>
                 Logout
             </Button>
         </>

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BACKEND_BASE_URL } from "../constants";
+import { BACKEND_BASE_URL } from "../contants";
 
 const axiosInstance = axios.create({
     baseURL: BACKEND_BASE_URL,
@@ -7,3 +7,4 @@ const axiosInstance = axios.create({
 });
 
 export default axiosInstance;
+
