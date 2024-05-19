@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction, isAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosInstance";
+import { RootState } from "../store"; 
 
 type User = {
     username: string;
@@ -19,6 +20,7 @@ type UserBasicInfo = {
     lastName: string;
     email: string;
     role : string;
+    token: string;
 };
 
 type UserProfileData = {
@@ -63,14 +65,25 @@ export const register = createAsyncThunk("register", async (data: NewUser) => {
     return resData;
 });
 
-export const logout = createAsyncThunk("logout", async () => {
-    const response = await axiosInstance.post("/logout", {});
-    const resData = response.data;
+export const logout = createAsyncThunk("logout", async (_, { getState }) => {
+    const state = getState() as RootState;
+    const token = state.auth.basicUserInfo?.token;
+
+    const response = await axiosInstance.post(
+        "/auth/logout",
+        {},
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
 
     localStorage.removeItem("userInfo");
 
-    return resData;
+    return response.data;
 });
+
 
 export const getUser = createAsyncThunk(
     "user/profile",

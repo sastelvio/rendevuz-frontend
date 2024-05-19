@@ -3,14 +3,18 @@ import { Routes, Route } from 'react-router-dom';
 import DefaultLayout from './layouts/DefaultLayout';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import { Home } from '@mui/icons-material';
+import Home from "./pages/Home";
 import ProtectedLayout from './layouts/ProtectedLayout';
+import NotificationBar from "./components/notification/NotificationBar";
 //import logo from './logo.svg';
 //import './App.css';
+
+
 
 function App() {
   return (
     <>
+      <NotificationBar />
       <Routes>
         <Route element={<DefaultLayout />}>
           <Route path="/login" element={<Login />} />
