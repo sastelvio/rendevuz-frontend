@@ -88,11 +88,12 @@ export const logout = createAsyncThunk("logout", async (_, { getState }) => {
 export const getUser = createAsyncThunk(
     "user/profile",
     async (userId: string) => {
-        const response = await axiosInstance.get(`/users/${userId}`);
+        const response = await axiosInstance.get("/auth/profile");
 
         return response.data;
     }
 );
+
 
 const authSlice = createSlice({
     name: "auth",
