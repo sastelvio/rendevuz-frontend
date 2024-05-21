@@ -15,7 +15,7 @@ type NewUser = User & {
 };
 
 type UserBasicInfo = {
-    id: string;
+    username: string;
     firstName: string;
     lastName: string;
     email: string;
