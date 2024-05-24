@@ -12,7 +12,8 @@ import {
     InputBase,
     styled,
     alpha,
-    Divider
+    Divider,
+    Button
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -98,9 +99,9 @@ const Header: React.FC<HeaderProps> = ({
     const getTitle = (pathname: string) => {
         switch (pathname) {
             case '/':
-                return 'Dashboard';
+                return 'DASHBOARD';
             case '/patient':
-                return 'Patient';
+                return 'PATIENT';
             default:
                 return '';
         }
@@ -136,11 +137,27 @@ const Header: React.FC<HeaderProps> = ({
                     {title}
                 </Typography>
                 {showAddButton && (
-                    <IconButton edge="start" color="inherit" onClick={handleAddClick}>
-                        <AddIcon />
-                    </IconButton>
+                    <Button
+                        variant="contained"
+                        disableElevation
+                        onClick={handleAddClick}
+                        sx={{
+                            marginLeft: 4,
+                            background: 'white',
+                            color: '#000', //black
+                            '&:hover': {
+                                backgroundColor: '#1976d2',
+                                color: '#fff',
+                            },
+                        }}
+                        style={{ textTransform: 'none' }}
+                        size="small"
+                        startIcon={<AddIcon />}
+                    >
+                        New
+                    </Button>
                 )}
-                
+
                 <Box sx={{ display: "flex", alignItems: "center", marginLeft: 'auto' }}>
                     <Search>
                         <SearchIconWrapper>

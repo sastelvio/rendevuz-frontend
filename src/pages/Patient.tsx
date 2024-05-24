@@ -243,7 +243,7 @@ const Patient = () => {
                                                     }}
                                                 >
                                                 </Box>
-                                                <CardContent sx={{ marginTop: 10 }}> {/* Espaço para acomodar o efeito de flutuação */}
+                                                <CardContent sx={{ marginTop: 5 }}> {/* Espaço para acomodar o efeito de flutuação */}
                                                     <TableContainer component={Paper}>
                                                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                                             <TableHead>
