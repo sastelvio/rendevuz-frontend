@@ -50,10 +50,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import ArticleIcon from '@mui/icons-material/Article';
+import CloseIcon from '@mui/icons-material/Close';
 
 import Sidebar from '../layouts/Sidebar';
 import Header from '../layouts/Header';
 import Footer from '../layouts/Footer';
+import PatientForm from "./forms/PatientForm";
 
 const drawerWidth = 240;
 const collapsedWidth = 73;
@@ -212,6 +214,7 @@ const Patient = () => {
     const handleAddClick = () => {
         // Adicione aqui a lógica para a ação de adicionar um paciente
         console.log("Add Patient clicked!");
+        expandBox();
     };
 
     //funcao para apagar linha selecionada
@@ -224,12 +227,14 @@ const Patient = () => {
     const handleEdit = (selectedRows: any[]) => {
         // Adicione aqui a lógica para editar as linhas selecionadas
         console.log('Editing selected rows:', selectedRows);
+        expandBox();
     };
 
     //funcao para editar linha selecionada
     const handleDetails = (selectedRows: any[]) => {
         // Adicione aqui a lógica para editar as linhas selecionadas
         console.log('View details of selected rows:', selectedRows);
+        expandBox();
     };
 
 
@@ -252,6 +257,42 @@ const Patient = () => {
         // Habilitar/desabilitar botões com base no número de linhas selecionadas
         setMultiButtonsDisabled(newSelection.length < 1);
     };
+
+    //FORMULARIO
+    const [boxHeight, setBoxHeight] = useState<number>(65); // Altura inicial da Box
+    const [isExpanded, setIsExpanded] = useState<boolean>(false); // Estado para controlar se a Box está expandida
+
+    // Função para aumentar a altura e mover os elementos abaixo
+    const expandBox = () => {
+        setBoxHeight(600); // Aumenta a altura para 600px
+        setIsExpanded(true); // Define o estado como expandido
+    };
+
+    // Calcula a margem superior dos elementos abaixo da Box
+    const marginTop = isExpanded ? 67 : 0;
+
+    // Função para retrair a Box ao tamanho original
+    const retractBox = () => {
+        setBoxHeight(65); // Retorna a altura para o valor original
+        setIsExpanded(false); // Define o estado como não expandido
+    };
+
+    const [showChildren, setShowChildren] = useState(false);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (isExpanded) {
+            // Atrasar a exibição dos filhos até que a animação esteja completa
+            timer = setTimeout(() => {
+                setShowChildren(true);
+            }, 500); // Tempo da animação em milissegundos
+        } else {
+            // Ocultar os filhos imediatamente quando a box é retraída
+            setShowChildren(false);
+        }
+        return () => clearTimeout(timer);
+    }, [isExpanded]);
+
 
     return (
         <Box sx={{ display: "flex", width: '100%', height: '100vh', overflow: 'hidden' }}>
@@ -315,7 +356,6 @@ const Patient = () => {
                                                     sx={{
                                                         backgroundColor: '#1976d2',
                                                         padding: 0,
-                                                        paddingLeft: 2,
                                                         boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.3)',
                                                         borderRadius: 1,
                                                         display: 'flex',
@@ -326,9 +366,47 @@ const Patient = () => {
                                                         left: '50%',
                                                         transform: 'translateX(-50%)',
                                                         width: '98%',
-                                                        height: '65px', // Ajuste a altura conforme necessário
+                                                        height: boxHeight, // Altura controlada pelo estado
+                                                        transition: 'height 0.5s ease', // Adiciona uma transição suave
                                                     }}
                                                 >
+                                                    {/* Adicione o componente PatientForm apenas se a Box estiver expandida */}
+                                                    {isExpanded && showChildren && (
+                                                        <Box
+                                                            sx={{
+                                                                backgroundColor: 'none',
+                                                                paddingLeft: 5,
+                                                                paddingRight: 5,
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                position: 'absolute',
+                                                                width: '100%',
+                                                                height: '100%',
+                                                                flexWrap: 'wrap', // exibir os elementos em linhas
+
+                                                            }}
+                                                        >
+                                                            {/* Barra com botão de retrair */}
+                                                            <Box
+                                                                sx={{
+                                                                    width: '100%',
+                                                                    display: 'flex',
+                                                                    justifyContent: 'flex-end',
+                                                                    marginBottom: 0,
+                                                                    marginTop: -7,
+                                                                    backgroundColor: 'none',
+                                                                }}
+                                                            >
+                                                                <IconButton onClick={() => retractBox()} size="small" sx={{ marginRight: 2, color: '#fff' }}>
+                                                                    <CloseIcon />
+                                                                </IconButton>
+                                                            </Box>
+
+                                                            {/* Adicione o componente PatientForm */}
+                                                            <PatientForm onSubmit={(formData) => console.log(formData)} />
+                                                        </Box>
+                                                    )}
                                                 </Box>
                                                 {/* Cabeçalho Personalizado */}
                                                 <Box
@@ -338,12 +416,13 @@ const Patient = () => {
                                                         display: 'flex',
                                                         alignItems: 'left',
                                                         color: '#000',
-                                                        marginTop: 5,
+                                                        //marginTop: 5,
                                                         marginLeft: 2,
                                                         marginRight: 2,
+                                                        marginTop: marginTop + 5, // Aplica a margem superior calculada     
+                                                        transition: 'margin-top 0.5s ease', // Adiciona uma transição suave                                                 
                                                     }}
                                                 >
-                                                    {/* Botões com base no estado de desabilitamento */}
                                                     <IconButton onClick={() => handleDetails(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
                                                         <ArticleIcon />
                                                     </IconButton>
