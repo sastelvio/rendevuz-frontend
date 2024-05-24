@@ -45,6 +45,11 @@ import TimelineDot from '@mui/lab/TimelineDot';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { slideUp } from '../animations'
 import { Link as MuiLink } from '@mui/material';
+import { DataGrid, GridColDef, GridTreeNodeWithRender, GridValueGetterParams } from '@mui/x-data-grid';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import IconButton from '@mui/material/IconButton';
+import ArticleIcon from '@mui/icons-material/Article';
 
 import Sidebar from '../layouts/Sidebar';
 import Header from '../layouts/Header';
@@ -77,21 +82,65 @@ const animationStyles = css`
 
 //table
 function createData(
-    name: string,
-    calories: number,
-    fat: number,
-    carbs: number,
-    protein: number,
+    id: number,
+    firstName: string,
+    lastName: string,
+    age: number,
 ) {
-    return { name, calories, fat, carbs, protein };
+    return { id, firstName, lastName, age };
 }
 
+const columns: GridColDef[] = [
+    { field: 'id', headerName: 'ID', flex: 0.5 },
+    { field: 'firstName', headerName: 'First name', flex: 1 },
+    { field: 'lastName', headerName: 'Last name', flex: 1 },
+    {
+        field: 'age',
+        headerName: 'Age',
+        type: 'number',
+        flex: 0.5,
+    },
+    {
+        field: 'fullName',
+        headerName: 'Full name',
+        description: 'This column has a value getter and is not sortable.',
+        sortable: false,
+        flex: 2,
+        valueGetter: (params: GridValueGetterParams<any, any>) => `${params.row.firstName || ''} ${params.row.lastName || ''}`,
+    },
+];
+
 const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
+    createData(1, 'Jon', 'Snow', 35),
+    createData(2, 'Cersei', 'Lannister', 42),
+    createData(3, 'Jaime', 'Lannister', 45),
+    createData(4, 'Arya', 'Stark', 16),
+    createData(5, 'Daenerys', 'Targaryen', 23),
+    createData(6, 'Melisandre', 'Asshai', 150),
+    createData(7, 'Ferrara', 'Clifford', 44),
+    createData(8, 'Rossini', 'Frances', 36),
+    createData(9, 'Harvey', 'Roxie', 65),
+    createData(10, 'Eddard', 'Stark', 48),
+    createData(11, 'Robert', 'Baratheon', 50),
+    createData(12, 'Sansa', 'Stark', 20),
+    createData(13, 'Brandon', 'Stark', 18),
+    createData(14, 'Sandor', 'Clegane', 40),
+    createData(15, 'Petyr', 'Baelish', 35),
+    createData(16, 'Varys', 'Unknown', 47),
+    createData(17, 'Bronn', 'Blackwater', 38),
+    createData(18, 'Tyrion', 'Lannister', 39),
+    createData(19, 'Jorah', 'Mormont', 50),
+    createData(20, 'Samwell', 'Tarly', 30),
+    createData(21, 'Gilly', 'Tarly', 25),
+    createData(22, 'Tormund', 'Giantsbane', 42),
+    createData(23, 'Brienne', 'Tarth', 32),
+    createData(24, 'Podrick', 'Payne', 28),
+    createData(25, 'Daario', 'Naharis', 35),
+    createData(26, 'Shae', 'Unknown', 29),
+    createData(27, 'Missandei', 'Nath', 25),
+    createData(28, 'Grey', 'Worm', 27),
+    createData(29, 'Yara', 'Greyjoy', 34),
+    createData(30, 'Theon', 'Greyjoy', 32),
 ];
 
 
@@ -165,6 +214,44 @@ const Patient = () => {
         console.log("Add Patient clicked!");
     };
 
+    //funcao para apagar linha selecionada
+    const handleDelete = (selectedRows: any[]) => {
+        // Adicione aqui a lógica para excluir a linha com o ID especificado
+        console.log('Deleting row with ID/s:', selectedRows);
+    };
+
+    //funcao para editar linha selecionada
+    const handleEdit = (selectedRows: any[]) => {
+        // Adicione aqui a lógica para editar as linhas selecionadas
+        console.log('Editing selected rows:', selectedRows);
+    };
+
+    //funcao para editar linha selecionada
+    const handleDetails = (selectedRows: any[]) => {
+        // Adicione aqui a lógica para editar as linhas selecionadas
+        console.log('View details of selected rows:', selectedRows);
+    };
+
+
+    // Adicione este estado ao componente Patient
+    const [selectedRows, setSelectedRows] = useState<any[]>([]);
+
+    // Estado para controlar a habilitação dos botões quando so 1 esta selecionado
+    const [oneButtonsDisabled, setOneButtonsDisabled] = useState<boolean>(true);
+
+    // Estado para controlar a habilitação dos botões quando mais de um esta selecionado
+    const [multiButtonsDisabled, setMultiButtonsDisabled] = useState<boolean>(true);
+
+    // Função para lidar com a seleção de linhas
+    const handleRowSelection = (newSelection: any[]) => {
+        setSelectedRows(newSelection);
+
+        // Habilitar/desabilitar botões com base no número de linhas selecionadas
+        setOneButtonsDisabled(newSelection.length !== 1);
+
+        // Habilitar/desabilitar botões com base no número de linhas selecionadas
+        setMultiButtonsDisabled(newSelection.length < 1);
+    };
 
     return (
         <Box sx={{ display: "flex", width: '100%', height: '100vh', overflow: 'hidden' }}>
@@ -243,36 +330,61 @@ const Patient = () => {
                                                     }}
                                                 >
                                                 </Box>
-                                                <CardContent sx={{ marginTop: 5 }}> {/* Espaço para acomodar o efeito de flutuação */}
-                                                    <TableContainer component={Paper}>
-                                                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                                                            <TableHead>
-                                                                <TableRow>
-                                                                    <TableCell>Dessert (100g serving)</TableCell>
-                                                                    <TableCell align="right">Calories</TableCell>
-                                                                    <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                                                                    <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                                                                    <TableCell align="right">Protein&nbsp;(g)</TableCell>
-                                                                </TableRow>
-                                                            </TableHead>
-                                                            <TableBody>
-                                                                {rows.map((row) => (
-                                                                    <TableRow
-                                                                        key={row.name}
-                                                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                                                    >
-                                                                        <TableCell component="th" scope="row">
-                                                                            {row.name}
-                                                                        </TableCell>
-                                                                        <TableCell align="right">{row.calories}</TableCell>
-                                                                        <TableCell align="right">{row.fat}</TableCell>
-                                                                        <TableCell align="right">{row.carbs}</TableCell>
-                                                                        <TableCell align="right">{row.protein}</TableCell>
-                                                                    </TableRow>
-                                                                ))}
-                                                            </TableBody>
-                                                        </Table>
-                                                    </TableContainer>
+                                                {/* Cabeçalho Personalizado */}
+                                                <Box
+                                                    sx={{
+                                                        backgroundColor: 'none',
+                                                        borderRadius: '4px',
+                                                        display: 'flex',
+                                                        alignItems: 'left',
+                                                        color: '#000',
+                                                        marginTop: 5,
+                                                        marginLeft: 2,
+                                                        marginRight: 2,
+                                                    }}
+                                                >
+                                                    {/* Botões com base no estado de desabilitamento */}
+                                                    <IconButton onClick={() => handleDetails(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
+                                                        <ArticleIcon />
+                                                    </IconButton>
+                                                    <IconButton onClick={() => handleEdit(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
+                                                        <EditIcon />
+                                                    </IconButton>
+                                                    <IconButton onClick={() => handleDelete(selectedRows)} disabled={multiButtonsDisabled} color="error" size="small" sx={{ marginRight: 2 }}>
+                                                        <DeleteIcon />
+                                                    </IconButton>
+                                                </Box>
+                                                {/* Fim do Cabeçalho Personalizado */}
+                                                <CardContent sx={{ marginTop: 0 }}> {/* Espaço para acomodar o efeito de flutuação */}
+                                                    <DataGrid
+                                                        rows={rows}
+                                                        columns={columns}
+                                                        // Adicione a propriedade `onSelectionModelChange` para capturar as seleções de linha
+                                                        onRowSelectionModelChange={handleRowSelection}
+                                                        initialState={{
+                                                            pagination: {
+                                                                paginationModel: { page: 0, pageSize: 25 },
+                                                            },
+                                                        }}
+                                                        pageSizeOptions={[25, 50]}
+                                                        checkboxSelection
+                                                        sx={{
+                                                            '& .MuiDataGrid-cell': {
+                                                                cursor: 'pointer',
+                                                            },
+                                                            '& .MuiDataGrid-row': {
+                                                                '&:hover': {
+                                                                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                                                },
+                                                                '&.Mui-selected': {
+                                                                    backgroundColor: 'rgba(25, 118, 210, 0.12) !important',
+                                                                },
+                                                            },
+                                                            '& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within': {
+                                                                outline: 'none',
+                                                            },
+                                                        }}
+                                                    />
                                                 </CardContent>
                                             </Box>
                                         </Card>

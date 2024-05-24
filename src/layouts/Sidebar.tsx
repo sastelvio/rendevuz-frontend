@@ -6,7 +6,7 @@ import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
 import { Link, useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;
-const collapsedWidth = 73;
+const collapsedWidth = 60;
 
 interface SidebarProps {
     open: boolean;
@@ -87,6 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
                                     sx={{
                                         backgroundColor: isActive ? '#e5e5e5' : 'inherit',
                                         color: isActive ? "#001219" : 'white',
+                                        height: '60px',
                                         '&:hover': {
                                             backgroundColor: '#e5e5e5',
                                             color: "#001219",
