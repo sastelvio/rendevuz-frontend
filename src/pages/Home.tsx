@@ -1,44 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
     Box,
-    Button,
     Typography,
-    Divider,
-    Paper,
-    Drawer,
-    AppBar,
     Toolbar,
-    IconButton,
     CssBaseline,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    Container,
-    Menu,
-    MenuItem,
-    Avatar,
-    Tooltip,
     Card,
     Grid,
     CardContent,
-    InputBase,
-    styled,
-    alpha,
     Fab
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import HomeIcon from "@mui/icons-material/Home";
-import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import PersonIcon from "@mui/icons-material/Person";
-import SettingsIcon from "@mui/icons-material/Settings";
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks";
 import { logout } from "../slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../store";
-import { Link as MuiLink } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
@@ -47,7 +22,6 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import BarChartComponent from "../components/chart/BarChartComponent";
 import LineChartComponent from "../components/chart/LineChartComponent";
 import StackedAreaChartComponent from "../components/chart/StackedAreaChartComponent";
-import SearchIcon from '@mui/icons-material/Search';
 import { css, keyframes } from '@emotion/react';
 import { CSSTransition } from 'react-transition-group';
 import { green, red, blue, orange, pink } from '@mui/material/colors';
@@ -61,55 +35,19 @@ import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
-import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { slideUp } from '../animations'
+import { Link as MuiLink } from '@mui/material';
+
+import Sidebar from '../layouts/Sidebar';
+import Header from '../layouts/Header';
+import Footer from '../layouts/Footer';
+
+
+import MapComponent from "../components/map/MapComponent";
 
 const drawerWidth = 240;
-const collapsedWidth = 64;
-
-//Search bar
-const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.65),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 1),
-    },
-    marginRight: theme.spacing(2),
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(3),
-        width: 'auto',
-    },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('md')]: {
-            width: '20ch',
-            '&:focus': {
-                width: '80ch',
-            },
-        },
-    },
-}));
+const collapsedWidth = 73;
 
 // to the timeline card
 const items = [
@@ -120,17 +58,6 @@ const items = [
     { icon: <KeyIcon sx={{ color: 'white' }} />, text: "New card added for order #4395133", date: "18 DEC 4:54 AM", backgroundColor: pink[500] }
 ];
 
-// to fadein animation
-const slideUp = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
 
 const animationStyles = css`
   &.slide-enter {
@@ -281,230 +208,33 @@ const Home = () => {
         }
     }, []);
 
+    // Função para lidar com o clique no botão "Add Patient"
+    const handleAddClick = () => {
+    };
+
 
     return (
         <Box sx={{ display: "flex", width: '100%', height: '100vh', overflow: 'hidden' }}>
             <CssBaseline />
             {/** MENU LATERAL ESQUERDO */}
-            <Drawer
-                variant="permanent"
-                open={open}
-                sx={{
-                    width: open ? drawerWidth : collapsedWidth,
-                    flexShrink: 0,
-                    whiteSpace: 'nowrap',
-                    transition: (theme) =>
-                        theme.transitions.create('width', {
-                            easing: theme.transitions.easing.sharp,
-                            duration: theme.transitions.duration.enteringScreen,
-                        }),
-                    '& .MuiDrawer-paper': {
-                        width: open ? drawerWidth : collapsedWidth,
-                        boxSizing: "border-box",
-                        overflowX: 'hidden',
-                        backgroundColor: '#001219',
-                        color: 'white',
-                        borderRight: '0px solid #001219',
-                        transition: (theme) =>
-                            theme.transitions.create('width', {
-                                easing: theme.transitions.easing.sharp,
-                                duration: theme.transitions.duration.enteringScreen,
-                            }),
-                    },
-                }}
-            >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: (theme) => theme.spacing(2),
-                        height: 63,
-                    }}
-                >
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        onClick={toggleDrawer}
-                        sx={{ marginLeft: -0.75, }}
-                    >
-                        <MenuIcon sx={{ fontSize: 25 }} />
-                    </IconButton>
-                    {open && (
-                        <Typography variant="h6" noWrap component="div" sx={{ marginLeft: 1, width: '90%' }}>
-                            Rendez-vous
-                        </Typography>
-                    )}
-                </Box>
-
-                <Box sx={{ overflow: "auto" }}>
-                    <List>
-                        <Tooltip title="Home" placement="right">
-                            <ListItem button
-                                sx={{
-                                    '&:hover': {
-                                        backgroundColor: '#e5e5e5',
-                                        color: "#001219",
-                                        '& .MuiListItemIcon-root': {
-                                            color: '#001219',
-                                        },
-                                    },
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        justifyContent: 'center',
-                                        color: 'white'
-                                    }}
-                                >
-                                    <HomeIcon fontSize="medium" />
-                                </ListItemIcon>
-                                {open && <ListItemText primary="Home" sx={{ paddingLeft: 2, paddingTop: 0, paddingBottom: 0, margin: 0 }} />}
-                            </ListItem>
-                        </Tooltip>
-                        <Tooltip title="Patient" placement="right">
-                            <ListItem button
-                                onClick={handleLogout}
-                                sx={{
-                                    '&:hover': {
-                                        backgroundColor: '#e5e5e5',
-                                        color: "#001219",
-                                        '& .MuiListItemIcon-root': {
-                                            color: '#001219',
-                                        },
-                                    },
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        justifyContent: 'center',
-                                        color: 'white',
-                                        '&:hover': {
-                                            backgroundColor: '#e5e5e5',
-                                        },
-                                    }}
-                                >
-                                    <LogoutIcon fontSize="medium" />
-                                </ListItemIcon>
-                                {open && <ListItemText primary="Logout" sx={{ paddingLeft: 2, paddingTop: 0, paddingBottom: 0, margin: 0 }} />}
-                            </ListItem>
-                        </Tooltip>
-                    </List>
-                </Box>
-            </Drawer>
+            <Sidebar open={open} toggleDrawer={toggleDrawer} />
 
             {/** ESPAÇO PARA O CONTEUDO */}
             <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflowX: 'hidden', backgroundColor: '#e5e5e5', width: '100%', height: '100%', }}>
                 {/*Cabecalho */}
-                <AppBar
-                    position="fixed"
-                    sx={{
-                        zIndex: (theme) => theme.zIndex.drawer + 1,
-                        marginLeft: open ? drawerWidth : collapsedWidth,
-                        width: `calc(100% - ${open ? drawerWidth : collapsedWidth}px)`,
-                        backgroundColor: 'rgba(229, 229, 229, 0.7)',
-                        color: '#001219',
-                        boxShadow: 'none',
-                    }}
-                >
-                    <Toolbar>
-                        <Typography variant="h6" noWrap component="div">
-                            Dashboard
-                        </Typography>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                marginLeft: 'auto'
-                            }}
-                        >
-                            <Search>
-                                <SearchIconWrapper>
-                                    <SearchIcon />
-                                </SearchIconWrapper>
-                                <StyledInputBase
-                                    placeholder="Search…"
-                                    inputProps={{ 'aria-label': 'search' }}
-                                    value={searchQuery}
-                                    onChange={handleSearchChange}
-                                />
-                            </Search>
-                            <IconButton color="inherit" sx={{ ml: 2, fontSize: 35 }}>
-                                <NotificationsIcon fontSize="inherit" />
-                            </IconButton>
-                            <IconButton
-                                edge="end"
-                                color="inherit"
-                                onClick={handleMenu}
-                                sx={{ ml: 2, fontSize: 35 }}
-                            >
-                                <AccountCircle fontSize="inherit" />
-                            </IconButton>
-                            <Menu
-                                anchorEl={anchorEl}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'right',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={Boolean(anchorEl)}
-                                onClose={handleClose}
-                                PaperProps={{
-                                    sx: {
-                                        mt: 1,
-                                        width: 350,
-                                    }
-                                }}
-                            >
-                                <Box sx={{ padding: 2 }}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <Avatar sx={{ marginRight: 2, width: 56, height: 56, fontSize: 24 }}>
-                                            {userProfileInfo ? userProfileInfo.firstName.charAt(0) : ''}
-                                        </Avatar>
-                                        <Box>
-                                            <Typography variant="body1">
-                                                {userProfileInfo ? `${userProfileInfo.firstName} ${userProfileInfo.lastName}` : 'Loading...'}
-                                            </Typography>
-                                            <Typography variant="body2" color="textSecondary">
-                                                @{userProfileInfo ? userProfileInfo.username : ''}
-                                            </Typography>
-                                            <Typography variant="body2" color="textSecondary">
-                                                {userProfileInfo ? userProfileInfo.role : ''}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
-                                </Box>
-
-                                <Divider />
-                                <MenuItem onClick={handleClose} sx={{ py: 2, px: 2 }}>
-                                    <ListItemIcon>
-                                        <PersonIcon />
-                                    </ListItemIcon>
-                                    Profile
-                                </MenuItem>
-                                <MenuItem onClick={handleClose} sx={{ py: 2, px: 2 }}>
-                                    <ListItemIcon>
-                                        <SettingsIcon />
-                                    </ListItemIcon>
-                                    Settings
-                                </MenuItem>
-                                <MenuItem onClick={handleLogout} sx={{ py: 2, px: 2 }}>
-                                    <ListItemIcon>
-                                        <LogoutIcon />
-                                    </ListItemIcon>
-                                    Logout
-                                </MenuItem>
-                            </Menu>
-                        </Box>
-                    </Toolbar>
-                </AppBar>
+                <Header
+                    open={open}
+                    drawerWidth={drawerWidth}
+                    collapsedWidth={collapsedWidth}
+                    searchQuery={searchQuery}
+                    handleSearchChange={handleSearchChange}
+                    handleMenu={handleMenu}
+                    handleClose={handleClose}
+                    anchorEl={anchorEl}
+                    handleLogout={handleLogout}
+                    userProfileInfo={userProfileInfo}
+                    handleAddClick={handleAddClick}
+                />
 
                 {/* Container principal */}
                 <Box
@@ -1006,31 +736,100 @@ const Home = () => {
                                             <Box
                                                 sx={{
                                                     position: 'relative',
-                                                    paddingTop: 3,
+                                                    paddingTop: 0,
                                                     backgroundColor: 'white',
                                                     boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.6)',
                                                     borderRadius: 2,
+                                                    height: '700px',
+                                                    overflow: 'hidden'
                                                 }}
                                             >
-                                                <CardContent sx={{ marginTop: 0 }}>
-                                                    <Typography variant="body1" gutterBottom sx={{ width: '100%', textAlign: 'left', paddingTop: 3, fontWeight: 'bold' }}>
-                                                        World Usage Density
-                                                    </Typography>
-                                                    <Typography variant="subtitle2" sx={{ width: '100%', textAlign: 'left', paddingBottom: 2 }}>
-                                                        By Continent
-                                                    </Typography>
-                                                    <Typography
-                                                        variant="caption"
+                                                <CardContent sx={{ position: 'relative', height: '100%', padding: 0 }}>
+                                                    <Box
                                                         sx={{
-                                                            width: '100%', textAlign: 'left',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            lineHeight: '20px',
+                                                            position: 'absolute',
+                                                            top: 0,
+                                                            left: 0,
+                                                            width: '100%',
+                                                            height: '100%',
+                                                            zIndex: 10,
+                                                            padding: 2,
+                                                            background: 'none'
                                                         }}
                                                     >
-                                                        <AccessTimeOutlinedIcon fontSize="inherit" sx={{ marginRight: 0.5 }} />
-                                                        Data updated recently
-                                                    </Typography>
+                                                        <Typography
+                                                            variant="body1"
+                                                            gutterBottom
+                                                            sx={{
+                                                                width: '100%',
+                                                                textAlign: 'left',
+                                                                paddingTop: 3,
+                                                                fontWeight: 'bold',
+                                                                textShadow: '2px 2px 4px rgba(255, 255, 255, 0.8)',
+                                                            }}
+                                                        >
+                                                            World Usage Density
+                                                        </Typography>
+                                                        <Typography
+                                                            variant="subtitle2"
+                                                            sx={{
+                                                                width: '100%',
+                                                                textAlign: 'left',
+                                                                paddingBottom: 2,
+                                                                textShadow: '2px 2px 4px rgba(255, 255, 255, 0.8)',
+                                                            }}
+                                                        >
+                                                            By Continent
+                                                        </Typography>
+                                                        <Typography
+                                                            variant="caption"
+                                                            gutterBottom
+                                                            sx={{
+                                                                position: 'absolute',
+                                                                bottom: 0,
+                                                                textAlign: 'left',
+                                                                paddingBottom: 3,
+                                                                fontWeight: 'bold',
+                                                                textShadow: '2px 2px 4px rgba(255, 255, 255, 0.8)',
+                                                            }}
+                                                        >
+                                                            <AccessTimeOutlinedIcon fontSize="inherit" sx={{ marginRight: 0.5 }} />
+                                                            Just updated
+                                                        </Typography>
+                                                        <Typography
+                                                            variant="caption"
+                                                            gutterBottom
+                                                            sx={{
+                                                                position: 'absolute',
+                                                                bottom: 0,
+                                                                right: 15,
+                                                                textAlign: 'left',
+                                                                paddingBottom: 3,
+                                                                fontWeight: 'bold',
+                                                                textShadow: '2px 2px 4px rgba(255, 255, 255, 0.8)',
+                                                            }}
+                                                        >
+                                                            &copy;
+                                                            {' '}
+                                                            <MuiLink href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">
+                                                                OpenStreetMap
+                                                            </MuiLink>
+                                                            {' '}
+                                                            contributors
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box
+                                                        sx={{
+                                                            height: '100%',
+                                                            width: '100%',
+                                                            position: 'absolute',
+                                                            top: 0,
+                                                            left: 0,
+                                                            zIndex: 5,
+                                                        }}
+                                                    >
+                                                        <MapComponent />
+                                                    </Box>
                                                 </CardContent>
                                             </Box>
                                         </Card>
@@ -1063,6 +862,7 @@ const Home = () => {
                                                     backgroundColor: 'white',
                                                     boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.6)',
                                                     borderRadius: 2,
+                                                    height: '700px'
                                                 }}
                                             >
                                                 <CardContent sx={{ marginTop: 0 }}> {/* Espaço para acomodar o efeito de flutuação */}
@@ -1124,31 +924,7 @@ const Home = () => {
                     </Box >
 
                     {/* Rodapé */}
-                    < AppBar
-                        position="static"
-                        sx={{
-                            top: 'auto',
-                            bottom: 0,
-                            marginTop: 4,
-                            marginLeft: 0,
-                            width: '100%',
-                            backgroundColor: '#e5e5e5',
-                            color: '#001219',
-                            boxShadow: 'none',
-                        }}
-                    >
-                        <Toolbar>
-                            <Typography variant="body2" align="left" sx={{ flexGrow: 1, marginLeft: 0, }}>
-                                © 2024 | made by {' '}
-                                <MuiLink href="https://sastelvio.com" target="_blank" rel="noopener noreferrer">
-                                    Sastelvio MANUEL
-                                </MuiLink>
-                            </Typography>
-                            <Typography variant="body2" align="right" sx={{ flexGrow: 1, marginRight: 3 }}>
-                                About Us | Blog | License
-                            </Typography>
-                        </Toolbar>
-                    </AppBar >
+                    <Footer />
                 </Box >
 
                 <Fab
