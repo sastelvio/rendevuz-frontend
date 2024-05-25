@@ -13,7 +13,8 @@ import {
     styled,
     alpha,
     Divider,
-    Button
+    Button,
+    Badge
 } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -22,7 +23,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 // Search bar
 const Search = styled('div')(({ theme }) => ({
@@ -102,6 +103,8 @@ const Header: React.FC<HeaderProps> = ({
                 return 'DASHBOARD';
             case '/patient':
                 return 'PATIENT';
+            case '/profile':
+                return 'PROFILE';
             default:
                 return '';
         }
@@ -111,6 +114,9 @@ const Header: React.FC<HeaderProps> = ({
     // Estado para controlar a exibição do botão "Add Patient"
     const [showAddButton, setShowAddButton] = useState(false);
 
+    // Estado para controlar a abertura do menu de notificações
+    const [notificationAnchorEl, setNotificationAnchorEl] = useState<HTMLElement | null>(null);
+
     // Efeito colateral para atualizar o estado do botão com base na localização da rota
     useEffect(() => {
         if (location.pathname === "/patient") {
@@ -119,6 +125,18 @@ const Header: React.FC<HeaderProps> = ({
             setShowAddButton(false);
         }
     }, [location.pathname]); // Execute o efeito sempre que a localização da rota mudar
+
+    // Função para lidar com a abertura do menu de notificações
+    const handleNotificationMenu = (event: React.MouseEvent<HTMLElement>) => {
+        setNotificationAnchorEl(event.currentTarget);
+    };
+
+    // Função para lidar com o fechamento do menu de notificações
+    const handleNotificationClose = () => {
+        setNotificationAnchorEl(null);
+    };
+
+    const notifications = Array.from({ length: 10 }, (_, i) => `Notification ${i + 1}`);
 
     return (
         <AppBar
@@ -130,6 +148,7 @@ const Header: React.FC<HeaderProps> = ({
                 backgroundColor: 'rgba(229, 229, 229, 0.7)',
                 color: '#001219',
                 boxShadow: 'none',
+                paddingRight: 3
             }}
         >
             <Toolbar>
@@ -170,12 +189,16 @@ const Header: React.FC<HeaderProps> = ({
                             onChange={handleSearchChange}
                         />
                     </Search>
-                    <IconButton color="inherit" sx={{ ml: 2, fontSize: 35 }}>
-                        <NotificationsIcon fontSize="inherit" />
+
+                    <IconButton color="inherit" sx={{ ml: 2, fontSize: 35 }} onClick={handleNotificationMenu}>
+                        <Badge badgeContent={10} color="primary">
+                            <NotificationsIcon fontSize="medium" />
+                        </Badge>
                     </IconButton>
                     <IconButton edge="end" color="inherit" onClick={handleMenu} sx={{ ml: 2, fontSize: 35 }}>
                         <AccountCircle fontSize="inherit" />
                     </IconButton>
+                    {/* PROFILE*/}
                     <Menu
                         anchorEl={anchorEl}
                         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
@@ -205,12 +228,14 @@ const Header: React.FC<HeaderProps> = ({
                         </Box>
 
                         <Divider />
-                        <MenuItem onClick={handleClose} sx={{ py: 2, px: 2 }}>
-                            <ListItemIcon>
-                                <PersonIcon />
-                            </ListItemIcon>
-                            Profile
-                        </MenuItem>
+                        <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <MenuItem sx={{ py: 2, px: 2 }}>
+                                <ListItemIcon>
+                                    <PersonIcon />
+                                </ListItemIcon>
+                                Profile
+                            </MenuItem>
+                        </Link>
                         <MenuItem onClick={handleClose} sx={{ py: 2, px: 2 }}>
                             <ListItemIcon>
                                 <SettingsIcon />
@@ -223,6 +248,27 @@ const Header: React.FC<HeaderProps> = ({
                             </ListItemIcon>
                             Logout
                         </MenuItem>
+                    </Menu>
+
+                    {/* NOTIFICATIONS */}
+                    <Menu
+                        anchorEl={notificationAnchorEl}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                        keepMounted
+                        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                        open={Boolean(notificationAnchorEl)}
+                        onClose={handleNotificationClose}
+                        PaperProps={{ sx: { mt: 1, width: 350, height: 400 } }}
+                    >
+                        <Box sx={{ padding: 2 }}>
+                            <Typography variant="h6">Notifications</Typography>
+                        </Box>
+                        <Divider />
+                        {notifications.map((notification, index) => (
+                            <MenuItem key={index} sx={{ py: 2, px: 2 }} onClick={handleNotificationClose}>
+                                {notification}
+                            </MenuItem>
+                        ))}
                     </Menu>
                 </Box>
 

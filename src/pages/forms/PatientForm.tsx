@@ -5,6 +5,8 @@ import {
     Grid,
     Box
 } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
+import ClearAllIcon from '@mui/icons-material/ClearAll';
 
 interface PatientFormProps {
     onSubmit: (formData: FormData) => void;
@@ -55,11 +57,12 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
             }}
         >
             <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid item xs={6}>
                     <TextField
                         fullWidth
                         label="ID"
                         name="id"
+                        disabled
                         value={formData.id}
                         onChange={handleChange}
                         sx={{
@@ -87,6 +90,8 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                             },
                         }}
                     />
+                </Grid>
+                <Grid item xs={6}>                    
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
@@ -153,8 +158,8 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                             },
                         }}
                     />
-                </Grid>
-                <Grid item xs={12}>
+                </Grid>                
+                <Grid item xs={6}>
                     <TextField
                         fullWidth
                         label="Age"
@@ -187,6 +192,8 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                         }}
                     />
                 </Grid>
+                <Grid item xs={6}>                    
+                </Grid>
                 <Grid
                     item xs={12}
                     sx={{
@@ -195,8 +202,8 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                         justifyContent: 'right',
                     }}
                 >
-                    <Button variant="outlined" sx={{ marginLeft: 2, width: '150px', color: '#fff' }} onClick={handleClear}>Clear</Button>
-                    <Button variant="contained" color="success" sx={{ marginLeft: 2, width: '150px' }} onClick={handleSubmit}>Submit</Button>
+                    <Button variant="outlined" sx={{ marginLeft: 2, width: '150px', color: '#fff', borderColor: '#fff' }} onClick={handleClear} startIcon={<ClearAllIcon />}>Clear</Button>
+                    <Button variant="contained" color="success" sx={{ marginLeft: 2, width: '150px' }} onClick={handleSubmit} endIcon={<SendIcon />}>Submit</Button>
                 </Grid>
             </Grid>
         </Box>

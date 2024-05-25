@@ -59,29 +59,6 @@ const items = [
 ];
 
 
-const animationStyles = css`
-  &.slide-enter {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  &.slide-enter-active {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 500ms, transform 500ms;
-  }
-  &.slide-exit {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  &.slide-exit-active {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 500ms, transform 500ms;
-  }
-`;
-
-
-
 //to stacked chart
 const legendData = ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine'];
 

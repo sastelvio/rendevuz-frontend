@@ -51,36 +51,16 @@ import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import ArticleIcon from '@mui/icons-material/Article';
 import CloseIcon from '@mui/icons-material/Close';
+import Tooltip from '@mui/material/Tooltip';
 
 import Sidebar from '../layouts/Sidebar';
 import Header from '../layouts/Header';
 import Footer from '../layouts/Footer';
 import PatientForm from "./forms/PatientForm";
+import DialogConfirm from "../components/notification/DialogConfirm";
 
 const drawerWidth = 240;
 const collapsedWidth = 73;
-
-
-const animationStyles = css`
-  &.slide-enter {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  &.slide-enter-active {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 500ms, transform 500ms;
-  }
-  &.slide-exit {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  &.slide-exit-active {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 500ms, transform 500ms;
-  }
-`;
 
 //table
 function createData(
@@ -221,6 +201,14 @@ const Patient = () => {
     const handleDelete = (selectedRows: any[]) => {
         // Adicione aqui a lógica para excluir a linha com o ID especificado
         console.log('Deleting row with ID/s:', selectedRows);
+        setConfirmDialogOpen(true);
+    };
+
+    const handleDeleteConfirm = () => {
+        setConfirmDialogOpen(false);
+        if (selectedRows.length > 0) {
+            console.log("Delete Patients IDs:", selectedRows);
+        }
     };
 
     //funcao para editar linha selecionada
@@ -278,20 +266,34 @@ const Patient = () => {
     };
 
     const [showChildren, setShowChildren] = useState(false);
+    const [backgroundColor, setBackgroundColor] = useState<string>("#1976d2"); // Estado para controlar a cor de fundo
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
+        let colorTimer: NodeJS.Timeout;
         if (isExpanded) {
-            // Atrasar a exibição dos filhos até que a animação esteja completa
+            // Atrasar a troca de cor até que a animação de expansão esteja completa
             timer = setTimeout(() => {
-                setShowChildren(true);
-            }, 500); // Tempo da animação em milissegundos
+                setBackgroundColor("#6c757d"); // Nova cor de fundo
+                // Atrasar a exibição dos filhos até que a troca de cor esteja completa
+                colorTimer = setTimeout(() => {
+                    setShowChildren(true);
+                }, 500); // Tempo da transição de cor em milissegundos
+            }, 500); // Tempo da animação de expansão em milissegundos
         } else {
             // Ocultar os filhos imediatamente quando a box é retraída
             setShowChildren(false);
+            setBackgroundColor("#1976d2"); // Reverter cor de fundo
         }
-        return () => clearTimeout(timer);
+        return () => {
+            clearTimeout(timer);
+            clearTimeout(colorTimer);
+        };
     }, [isExpanded]);
+
+    //DIALOG
+    const [confirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false); // Estado para controlar a exibição do diálogo de confirmação
+
 
 
     return (
@@ -353,8 +355,9 @@ const Patient = () => {
                                                 }}
                                             >
                                                 <Box
+                                                    //ref={scrollableBoxRef}
                                                     sx={{
-                                                        backgroundColor: '#1976d2',
+                                                        //backgroundColor: '#1976d2',
                                                         padding: 0,
                                                         boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.3)',
                                                         borderRadius: 1,
@@ -368,6 +371,7 @@ const Patient = () => {
                                                         width: '98%',
                                                         height: boxHeight, // Altura controlada pelo estado
                                                         transition: 'height 0.5s ease', // Adiciona uma transição suave
+                                                        backgroundColor: backgroundColor, // Cor de fundo controlada pelo estado
                                                     }}
                                                 >
                                                     {/* Adicione o componente PatientForm apenas se a Box estiver expandida */}
@@ -398,7 +402,7 @@ const Patient = () => {
                                                                     backgroundColor: 'none',
                                                                 }}
                                                             >
-                                                                <IconButton onClick={() => retractBox()} size="small" sx={{ marginRight: 2, color: '#fff' }}>
+                                                                <IconButton onClick={() => retractBox()} size="small" sx={{ marginRight: 0, color: '#fff' }}>
                                                                     <CloseIcon />
                                                                 </IconButton>
                                                             </Box>
@@ -423,15 +427,21 @@ const Patient = () => {
                                                         transition: 'margin-top 0.5s ease', // Adiciona uma transição suave                                                 
                                                     }}
                                                 >
-                                                    <IconButton onClick={() => handleDetails(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
-                                                        <ArticleIcon />
-                                                    </IconButton>
-                                                    <IconButton onClick={() => handleEdit(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
-                                                        <EditIcon />
-                                                    </IconButton>
-                                                    <IconButton onClick={() => handleDelete(selectedRows)} disabled={multiButtonsDisabled} color="error" size="small" sx={{ marginRight: 2 }}>
-                                                        <DeleteIcon />
-                                                    </IconButton>
+                                                    <Tooltip title="View" placement="top">
+                                                        <IconButton onClick={() => handleDetails(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
+                                                            <ArticleIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip title="Edit" placement="top">
+                                                        <IconButton onClick={() => handleEdit(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
+                                                            <EditIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    <Tooltip title="Delete" placement="top">
+                                                        <IconButton onClick={() => handleDelete(selectedRows)} disabled={multiButtonsDisabled} color="error" size="small" sx={{ marginRight: 2 }}>
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
                                                 </Box>
                                                 {/* Fim do Cabeçalho Personalizado */}
                                                 <CardContent sx={{ marginTop: 0 }}> {/* Espaço para acomodar o efeito de flutuação */}
@@ -492,7 +502,14 @@ const Patient = () => {
                 >
                     <KeyboardArrowUpIcon />
                 </Fab>
-
+                <DialogConfirm
+                    open={confirmDialogOpen}
+                    title="Confirm Delete"
+                    message="Are you sure you want to delete the selected patients?"
+                    severity="error" // Severidade
+                    onClose={() => setConfirmDialogOpen(false)}
+                    onConfirm={handleDeleteConfirm}
+                />
             </Box >
         </Box >
     );
