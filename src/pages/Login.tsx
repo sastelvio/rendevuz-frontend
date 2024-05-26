@@ -11,15 +11,16 @@ import {
     Alert,
     Card,
     CardContent,
+    FormGroup,
+    FormControlLabel,
+    Switch
 } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAppDispatch } from "../hooks/redux-hooks";
 import { login } from "../slices/authSlice";
 import LockPersonIcon from '@mui/icons-material/LockPerson';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+import Footer from '../layouts/Footer';
 
 const Login = () => {
     const dispatch = useAppDispatch();
@@ -28,7 +29,8 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    const handleLogin = async () => {
+    const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault(); // Prevent the default form submission
         setError(""); // Reset error message
         // Basic validation of inputs
         if (username && password) {
@@ -106,7 +108,11 @@ const Login = () => {
                                     <Typography variant="h5" sx={{ fontWeight: 'bold' }}>Sign In</Typography>
                                 </Box>
                                 <CardContent sx={{ marginTop: 5 }}> {/* Espaço para acomodar o efeito de flutuação */}
-                                    <Box sx={{ mt: 1 }}>
+                                    <Box
+                                        component="form"
+                                        onSubmit={handleLogin}
+                                        sx={{ mt: 1 }}
+                                    >
                                         <TextField
                                             margin="normal"
                                             required
@@ -138,14 +144,13 @@ const Login = () => {
                                             <FormControlLabel control={<Switch />} label="Remember me" />
                                         </FormGroup>
                                         <Button
+                                            type="submit"
                                             variant="contained"
                                             color="success"
                                             fullWidth
                                             sx={{
                                                 marginTop: 2,
                                             }}
-                                            onClick={handleLogin}
-                                            autoFocus
                                             endIcon={<LockPersonIcon />}
                                         >
                                             Authenticate
@@ -158,11 +163,39 @@ const Login = () => {
                                                     variant="text"
                                                     sx={{
                                                         marginTop: 2,
-                                                        width: '100%'
+                                                        width: '100%',
+                                                        fontSize: '12px',
                                                     }}
                                                 >
                                                     I forgot my credentials
                                                 </Button>
+                                            </Grid>
+                                            <Grid
+                                                item
+                                                xs={12}
+                                                sx={{
+                                                    marginTop: 2,
+                                                }}>
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                    }}>
+                                                    Don't have an account?
+                                                    <Link to="/register" style={{ textDecoration: 'none', color: 'inherit' }}>
+                                                        <Button
+                                                            color="primary"
+                                                            variant="text"
+                                                            sx={{
+                                                                fontWeight: 'bold',
+                                                                marginLeft: 1
+                                                            }}
+                                                        >
+                                                            Sign Up
+                                                        </Button>
+                                                    </Link>
+                                                </Box>
                                             </Grid>
                                         </Grid>
                                     </Box>

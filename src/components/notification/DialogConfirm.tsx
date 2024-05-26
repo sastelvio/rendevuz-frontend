@@ -64,6 +64,8 @@ const DialogConfirm: React.FC<DialogConfirmProps> = ({ open, title, message, sev
                     variant="outlined"
                     sx={{
                         marginLeft: 2,
+                        marginBottom: 2,
+                        marginRight:2,
                         width: '150px'
                     }}
                 >
@@ -73,6 +75,8 @@ const DialogConfirm: React.FC<DialogConfirmProps> = ({ open, title, message, sev
                     variant="contained"
                     sx={{
                         marginLeft: 2,
+                        marginBottom: 2,
+                        marginRight:2,
                         width: '150px',
                         color: '#fff',
                         backgroundColor: '#d84545',

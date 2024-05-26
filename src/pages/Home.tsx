@@ -223,7 +223,7 @@ const Home = () => {
                     <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%', }}>
                         <Grid container spacing={0}>
                             {/*CARD 1*/}
-                            <Grid item xs={3}>
+                            <Grid item xs={12} sm={3}>
                                 <CSSTransition in={show} timeout={500} classNames="slide" unmountOnExit>
                                     <Box
                                         sx={{
@@ -283,7 +283,7 @@ const Home = () => {
                             </Grid>
 
                             {/*CARD 2*/}
-                            <Grid item xs={3}>
+                            <Grid item xs={12} sm={3}>
                                 <CSSTransition in={show} timeout={500} classNames="slide" unmountOnExit>
                                     <Box
                                         sx={{
@@ -343,7 +343,7 @@ const Home = () => {
                             </Grid>
 
                             {/*CARD 3*/}
-                            <Grid item xs={3}>
+                            <Grid item xs={12} sm={3}>
                                 <CSSTransition in={show} timeout={500} classNames="slide" unmountOnExit>
                                     <Box
                                         sx={{
@@ -404,7 +404,7 @@ const Home = () => {
 
 
                             {/*CARD 4*/}
-                            <Grid item xs={3}>
+                            <Grid item xs={12} sm={3}>
                                 <CSSTransition in={show} timeout={500} classNames="slide" unmountOnExit>
                                     <Box
                                         sx={{
@@ -469,7 +469,7 @@ const Home = () => {
                     <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%', }}>
                         <Grid container spacing={0}>
                             {/*CARD 1*/}
-                            <Grid item xs={4}>
+                            <Grid item xs={12} sm={4}>
                                 <CSSTransition in={show} timeout={500} classNames="slide" unmountOnExit>
                                     <Box
                                         sx={{
@@ -542,7 +542,7 @@ const Home = () => {
                             </Grid>
 
                             {/*CARD 2*/}
-                            <Grid item xs={4}>
+                            <Grid item xs={12} sm={4}>
                                 <CSSTransition in={show} timeout={500} classNames="slide" unmountOnExit>
                                     <Box
                                         sx={{
@@ -615,7 +615,7 @@ const Home = () => {
                             </Grid>
 
                             {/*CARD 3*/}
-                            <Grid item xs={4}>
+                            <Grid item xs={12} sm={4}>
                                 <CSSTransition in={show} timeout={500} classNames="slide" unmountOnExit>
                                     <Box
                                         sx={{
@@ -693,7 +693,7 @@ const Home = () => {
                     < Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%', }}>
                         <Grid container spacing={0}>
                             {/*CARD 1*/}
-                            <Grid item xs={8}>
+                            <Grid item xs={12} sm={8}>
                                 <CSSTransition in={show} timeout={500} classNames="slide" unmountOnExit>
                                     <Box
                                         sx={{
@@ -815,7 +815,7 @@ const Home = () => {
                             </Grid>
 
                             {/*CARD 2*/}
-                            <Grid item xs={4}>
+                            <Grid item xs={12} sm={4}>
                                 <CSSTransition in={show} timeout={500} classNames="slide" unmountOnExit>
                                     <Box
                                         sx={{

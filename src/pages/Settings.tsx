@@ -45,7 +45,7 @@ const items = [
 ];
 
 
-const Profile = () => {
+const Settings = () => {
     const dispatch: AppDispatch = useAppDispatch();
     const navigate = useNavigate();
     const userProfileInfo = useAppSelector((state) => state.auth.basicUserInfo);
@@ -159,7 +159,7 @@ const Profile = () => {
                     >
                         <Grid container spacing={2} justifyContent="center" sx={{ paddingRight: 2, }}>
                             {/*CARD 1*/}
-                            <Grid item xs={12} sm={12} container justifyContent="center">
+                            <Grid item xs={12} container justifyContent="center">
                                 <Card
                                     sx={{
                                         paddingTop: 4,
@@ -173,7 +173,7 @@ const Profile = () => {
                                 </Card>
                             </Grid>
                             {/*CARD 2: CONTENT*/}
-                            <Grid item xs={12} sm={12} container justifyContent="center">
+                            <Grid item xs={12} container justifyContent="center">
                                 <Card
                                     sx={{
                                         backgroundColor: 'white',
@@ -187,7 +187,7 @@ const Profile = () => {
                                     <CardContent sx={{ marginTop: 0 }}>
                                         <Grid container spacing={2} >
                                             {/**LINHA 1 */}
-                                            <Grid item xs={12} sm={12} container justifyContent="center">
+                                            <Grid item xs={12} container justifyContent="center">
                                                 <Card sx={{ width: '100%', backgroundColor: 'transparent', boxShadow: 'none', }}>
                                                     <CardContent sx={{ marginTop: 0 }}>
                                                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -210,7 +210,7 @@ const Profile = () => {
                                                 </Card>
                                             </Grid>
                                             {/**LINHA 2 */}
-                                            <Grid item xs={12} sm={4} container justifyContent="center">
+                                            <Grid item xs={4} container justifyContent="center">
                                                 <Card sx={{ width: '100%', backgroundColor: 'transparent', boxShadow: 'none', }}>
                                                     <CardContent sx={{ marginTop: 0 }}>
                                                         <Box sx={{ width: '100%', }}>
@@ -280,7 +280,7 @@ const Profile = () => {
                                                     </CardContent>
                                                 </Card>
                                             </Grid>
-                                            <Grid item xs={12} sm={4} container justifyContent="center">
+                                            <Grid item xs={4} container justifyContent="center">
                                                 <Card sx={{ width: '100%', backgroundColor: 'transparent', boxShadow: 'none', }}>
                                                     <CardContent sx={{ marginTop: 0 }}>
                                                         <Box sx={{ width: '100%', }}>
@@ -320,7 +320,7 @@ const Profile = () => {
                                                     </CardContent>
                                                 </Card>
                                             </Grid>
-                                            <Grid item xs={12} sm={4} container justifyContent="center">
+                                            <Grid item xs={4} container justifyContent="center">
                                                 <Card sx={{ width: '100%', backgroundColor: 'transparent', boxShadow: 'none', }}>
                                                     <CardContent sx={{ marginTop: 0 }}>
                                                         <Box sx={{ width: '100%', }}>
@@ -409,4 +409,4 @@ const Profile = () => {
     );
 };
 
-export default Profile;
+export default Settings;
