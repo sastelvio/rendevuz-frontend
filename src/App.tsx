@@ -8,6 +8,7 @@ import ProtectedLayout from './layouts/ProtectedLayout';
 import NotificationBar from "./components/notification/NotificationBar";
 import Patient from './pages/Patient';
 import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 //import logo from './logo.svg';
 //import './App.css';
 
@@ -26,6 +27,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/patient" element={<Patient />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
     </>

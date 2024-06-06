@@ -59,70 +59,47 @@ import Footer from '../layouts/Footer';
 import PatientForm from "./forms/PatientForm";
 import DialogConfirm from "../components/notification/DialogConfirm";
 
+import { fetchPatients, addPatient, updatePatient, deletePatient } from "../slices/patientSlice";
+
 const drawerWidth = 240;
 const collapsedWidth = 73;
 
 //table
 function createData(
-    id: number,
+    //id: number,
     firstName: string,
-    lastName: string,
-    age: number,
+    surName: string,
+    socialSecurity: string,
+    email: string,
 ) {
-    return { id, firstName, lastName, age };
+    return { firstName, surName, socialSecurity, email };
 }
 
 const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', flex: 0.5 },
-    { field: 'firstName', headerName: 'First name', flex: 1 },
-    { field: 'lastName', headerName: 'Last name', flex: 1 },
+    /*{ field: 'id', headerName: 'ID', flex: 0.5 },
+    { field: 'firstName', headerName: 'name', flex: 1 },
+    { field: 'surName', headerName: 'Surname', flex: 1 },
     {
-        field: 'age',
-        headerName: 'Age',
+        field: 'socialSecurity',
+        headerName: 'socialSecurity',
         type: 'number',
         flex: 0.5,
-    },
+    },*/
+    { field: 'socialSecurity', headerName: 'Social Security', flex: 1 },
     {
         field: 'fullName',
         headerName: 'Full name',
         description: 'This column has a value getter and is not sortable.',
         sortable: false,
         flex: 2,
-        valueGetter: (params: GridValueGetterParams<any, any>) => `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-    },
+        valueGetter: (params: GridValueGetterParams<any, any>) => `${params.row.firstName || ''} ${params.row.surName || ''}`,
+    },    
+    { field: 'email', headerName: 'Email', flex: 1 },
+    
 ];
 
 const rows = [
-    createData(1, 'Jon', 'Snow', 35),
-    createData(2, 'Cersei', 'Lannister', 42),
-    createData(3, 'Jaime', 'Lannister', 45),
-    createData(4, 'Arya', 'Stark', 16),
-    createData(5, 'Daenerys', 'Targaryen', 23),
-    createData(6, 'Melisandre', 'Asshai', 150),
-    createData(7, 'Ferrara', 'Clifford', 44),
-    createData(8, 'Rossini', 'Frances', 36),
-    createData(9, 'Harvey', 'Roxie', 65),
-    createData(10, 'Eddard', 'Stark', 48),
-    createData(11, 'Robert', 'Baratheon', 50),
-    createData(12, 'Sansa', 'Stark', 20),
-    createData(13, 'Brandon', 'Stark', 18),
-    createData(14, 'Sandor', 'Clegane', 40),
-    createData(15, 'Petyr', 'Baelish', 35),
-    createData(16, 'Varys', 'Unknown', 47),
-    createData(17, 'Bronn', 'Blackwater', 38),
-    createData(18, 'Tyrion', 'Lannister', 39),
-    createData(19, 'Jorah', 'Mormont', 50),
-    createData(20, 'Samwell', 'Tarly', 30),
-    createData(21, 'Gilly', 'Tarly', 25),
-    createData(22, 'Tormund', 'Giantsbane', 42),
-    createData(23, 'Brienne', 'Tarth', 32),
-    createData(24, 'Podrick', 'Payne', 28),
-    createData(25, 'Daario', 'Naharis', 35),
-    createData(26, 'Shae', 'Unknown', 29),
-    createData(27, 'Missandei', 'Nath', 25),
-    createData(28, 'Grey', 'Worm', 27),
-    createData(29, 'Yara', 'Greyjoy', 34),
-    createData(30, 'Theon', 'Greyjoy', 32),
+    createData('Jon', 'Snow', '35', '45'),
 ];
 
 
@@ -130,6 +107,9 @@ const Patient = () => {
     const dispatch: AppDispatch = useAppDispatch();
     const navigate = useNavigate();
     const userProfileInfo = useAppSelector((state) => state.auth.basicUserInfo);
+
+    const patients = useAppSelector((state) => state.patient.patients);
+
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [open, setOpen] = useState(true);
     const [fabVisible, setFabVisible] = useState(false);
@@ -143,29 +123,19 @@ const Patient = () => {
         }
     };
 
-    const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const toggleDrawer = () => {
-        setOpen(!open);
-    };
-
+    const handleMenu = (event: React.MouseEvent<HTMLElement>) => { setAnchorEl(event.currentTarget); };
+    const handleClose = () => { setAnchorEl(null); };
+    const toggleDrawer = () => { setOpen(!open); };
     const [searchQuery, setSearchQuery] = useState('');
-
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(event.target.value);
-    };
-
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => { setSearchQuery(event.target.value); };
     const [show, setShow] = useState(false);
-
     const [showFab, setShowFab] = useState(false);
-
     const scrollableBoxRef = useRef<HTMLDivElement>(null);
+
+    // Fetch patients when the component mounts
+    useEffect(() => {
+        dispatch(fetchPatients());
+    }, [dispatch]);
 
     const handleScroll = () => {
         if (scrollableBoxRef.current) {
@@ -207,6 +177,7 @@ const Patient = () => {
     const handleDeleteConfirm = () => {
         setConfirmDialogOpen(false);
         if (selectedRows.length > 0) {
+            //dispatch(deletePatient(selectedRows));
             console.log("Delete Patients IDs:", selectedRows);
         }
     };
@@ -446,8 +417,9 @@ const Patient = () => {
                                                 {/* Fim do Cabeçalho Personalizado */}
                                                 <CardContent sx={{ marginTop: 0 }}> {/* Espaço para acomodar o efeito de flutuação */}
                                                     <DataGrid
-                                                        rows={rows}
+                                                        rows={patients}
                                                         columns={columns}
+                                                        getRowId={(row) => row.socialSecurity}
                                                         // Adicione a propriedade `onSelectionModelChange` para capturar as seleções de linha
                                                         onRowSelectionModelChange={handleRowSelection}
                                                         initialState={{

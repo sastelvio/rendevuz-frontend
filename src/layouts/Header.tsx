@@ -104,7 +104,9 @@ const Header: React.FC<HeaderProps> = ({
             case '/patient':
                 return 'PATIENT';
             case '/profile':
-                return 'PROFILE';
+                return 'USER PROFILE';
+            case '/settings':
+                return 'SETTINGS';
             default:
                 return '';
         }
@@ -236,12 +238,14 @@ const Header: React.FC<HeaderProps> = ({
                                 Profile
                             </MenuItem>
                         </Link>
-                        <MenuItem onClick={handleClose} sx={{ py: 2, px: 2 }}>
-                            <ListItemIcon>
-                                <SettingsIcon />
-                            </ListItemIcon>
-                            Settings
-                        </MenuItem>
+                        <Link to="/settings" style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <MenuItem sx={{ py: 2, px: 2 }}>
+                                <ListItemIcon>
+                                    <SettingsIcon />
+                                </ListItemIcon>
+                                Settings
+                            </MenuItem>
+                        </Link>
                         <MenuItem onClick={handleLogout} sx={{ py: 2, px: 2 }}>
                             <ListItemIcon>
                                 <LogoutIcon />

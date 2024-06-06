@@ -4,11 +4,14 @@ import userReducer from "./slices/userSlice";
 import notificationReducer from "./slices/notificationSlice";
 import { axiosMiddleware } from "./api/middleware";
 
+import patientReducer from './slices/patientSlice';
+
 const store = configureStore({
   reducer: {
     auth: authReducer,
     user: userReducer,
     notification: notificationReducer,
+    patient: patientReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(axiosMiddleware),
