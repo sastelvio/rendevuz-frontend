@@ -142,6 +142,7 @@ const Profile = () => {
                     handleLogout={handleLogout}
                     userProfileInfo={userProfileInfo}
                     handleAddClick={handleAddClick}
+                    isAddDisabled={() => true}
                 />
 
                 {/* Container principal */}

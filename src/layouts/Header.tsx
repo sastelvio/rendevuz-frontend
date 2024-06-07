@@ -25,6 +25,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import { Link, useLocation } from 'react-router-dom';
 
+
 // Search bar
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -80,6 +81,7 @@ interface HeaderProps {
     handleLogout: () => void;
     userProfileInfo: any;
     handleAddClick: () => void; // To handle buttom actions based on route
+    isAddDisabled: () => boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -94,6 +96,7 @@ const Header: React.FC<HeaderProps> = ({
     handleLogout,
     userProfileInfo,
     handleAddClick,
+    isAddDisabled,
 
 }) => {
     const location = useLocation();
@@ -113,8 +116,10 @@ const Header: React.FC<HeaderProps> = ({
     };
     const title = getTitle(location.pathname);
 
-    // Estado para controlar a exibição do botão "Add Patient"
+    // Estado para controlar a exibição do botão "Add"
     const [showAddButton, setShowAddButton] = useState(false);
+    // Estado para controlar a activacao do botão "Add"
+    const [disableAddButton, setDisableAddButton] = useState(false);
 
     // Estado para controlar a abertura do menu de notificações
     const [notificationAnchorEl, setNotificationAnchorEl] = useState<HTMLElement | null>(null);
@@ -170,10 +175,14 @@ const Header: React.FC<HeaderProps> = ({
                                 backgroundColor: '#1976d2',
                                 color: '#fff',
                             },
+                            '&:disabled': { // Custom styles for the disabled state
+                                backgroundColor: '#e5e5e5',
+                            },
                         }}
                         style={{ textTransform: 'none' }}
                         size="small"
                         startIcon={<AddIcon />}
+                        disabled={isAddDisabled()} // Desativar o botão com base na função isAddDisabled
                     >
                         New
                     </Button>

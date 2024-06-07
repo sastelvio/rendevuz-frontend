@@ -1,51 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
     Box,
-    Typography,
     Toolbar,
     CssBaseline,
     Card,
     Grid,
     CardContent,
     Fab,
-    TableContainer,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableRow
 } from "@mui/material";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useAppDispatch, useAppSelector } from "../hooks/redux-hooks";
 import { logout } from "../slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import { AppDispatch } from "../store";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
-import BarChartComponent from "../components/chart/BarChartComponent";
-import LineChartComponent from "../components/chart/LineChartComponent";
-import StackedAreaChartComponent from "../components/chart/StackedAreaChartComponent";
-import { css, keyframes } from '@emotion/react';
 import { CSSTransition } from 'react-transition-group';
-import { green, red, blue, orange, pink } from '@mui/material/colors';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import PaymentIcon from '@mui/icons-material/Payment';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import KeyIcon from '@mui/icons-material/VpnKey';
-import Timeline from '@mui/lab/Timeline';
-import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineDot from '@mui/lab/TimelineDot';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { slideUp } from '../animations'
-import { Link as MuiLink } from '@mui/material';
-import { DataGrid, GridColDef, GridTreeNodeWithRender, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
@@ -61,20 +31,12 @@ import DialogConfirm from "../components/notification/DialogConfirm";
 
 import { fetchPatients, addPatient, updatePatient, deletePatient } from "../slices/patientSlice";
 
+import '../layouts/style/General.css'
+
 const drawerWidth = 240;
 const collapsedWidth = 73;
 
 //table
-function createData(
-    //id: number,
-    firstName: string,
-    surName: string,
-    socialSecurity: string,
-    email: string,
-) {
-    return { firstName, surName, socialSecurity, email };
-}
-
 const columns: GridColDef[] = [
     /*{ field: 'id', headerName: 'ID', flex: 0.5 },
     { field: 'firstName', headerName: 'name', flex: 1 },
@@ -93,15 +55,10 @@ const columns: GridColDef[] = [
         sortable: false,
         flex: 2,
         valueGetter: (params: GridValueGetterParams<any, any>) => `${params.row.firstName || ''} ${params.row.surName || ''}`,
-    },    
+    },
     { field: 'email', headerName: 'Email', flex: 1 },
-    
-];
 
-const rows = [
-    createData('Jon', 'Snow', '35', '45'),
 ];
-
 
 const Patient = () => {
     const dispatch: AppDispatch = useAppDispatch();
@@ -112,7 +69,6 @@ const Patient = () => {
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [open, setOpen] = useState(true);
-    const [fabVisible, setFabVisible] = useState(false);
 
     const handleLogout = async () => {
         try {
@@ -162,14 +118,11 @@ const Patient = () => {
 
     // Função para lidar com o clique no botão "Add Patient"
     const handleAddClick = () => {
-        // Adicione aqui a lógica para a ação de adicionar um paciente
-        console.log("Add Patient clicked!");
         expandBox();
     };
 
     //funcao para apagar linha selecionada
     const handleDelete = (selectedRows: any[]) => {
-        // Adicione aqui a lógica para excluir a linha com o ID especificado
         console.log('Deleting row with ID/s:', selectedRows);
         setConfirmDialogOpen(true);
     };
@@ -219,20 +172,23 @@ const Patient = () => {
 
     //FORMULARIO
     const [boxHeight, setBoxHeight] = useState<number>(65); // Altura inicial da Box
+    const [boxWidth, setBoxWidth] = useState<string>('98%'); // Cumprimento inicial da Box
     const [isExpanded, setIsExpanded] = useState<boolean>(false); // Estado para controlar se a Box está expandida
 
     // Função para aumentar a altura e mover os elementos abaixo
     const expandBox = () => {
-        setBoxHeight(600); // Aumenta a altura para 600px
+        setBoxHeight(500); // Aumenta a altura para 600px
+        setBoxWidth('80%'); // Aumenta a cumprimento para 600px
         setIsExpanded(true); // Define o estado como expandido
     };
 
     // Calcula a margem superior dos elementos abaixo da Box
-    const marginTop = isExpanded ? 67 : 0;
+    const marginTop = isExpanded ? 57 : 0;
 
     // Função para retrair a Box ao tamanho original
     const retractBox = () => {
         setBoxHeight(65); // Retorna a altura para o valor original
+        setBoxWidth('98%'); // Retorna ao cumprimento para o valor original
         setIsExpanded(false); // Define o estado como não expandido
     };
 
@@ -245,7 +201,7 @@ const Patient = () => {
         if (isExpanded) {
             // Atrasar a troca de cor até que a animação de expansão esteja completa
             timer = setTimeout(() => {
-                setBackgroundColor("#6c757d"); // Nova cor de fundo
+                setBackgroundColor("#dee2e6"); // Nova cor de fundo
                 // Atrasar a exibição dos filhos até que a troca de cor esteja completa
                 colorTimer = setTimeout(() => {
                     setShowChildren(true);
@@ -288,12 +244,21 @@ const Patient = () => {
                     handleLogout={handleLogout}
                     userProfileInfo={userProfileInfo}
                     handleAddClick={handleAddClick}
+                    isAddDisabled={() => isExpanded}
                 />
 
                 {/* Container principal */}
                 <Box
-                    sx={{ flexGrow: 1, overflowY: 'auto', width: '98%', marginLeft: 3, marginRight: 3, marginTop: 0, marginBottom: 0, }}
-                    ref={scrollableBoxRef}
+                    sx={{ 
+                        flexGrow: 1, 
+                        overflowY: 'auto', 
+                        width: '98%', 
+                        marginLeft: 3, 
+                        marginRight: 3, 
+                        marginTop: 0, 
+                        marginBottom: 0, 
+                    }}
+                    ref={scrollableBoxRef}                    
                 >
                     <Toolbar />
                     <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%', }}>
@@ -328,7 +293,7 @@ const Patient = () => {
                                                 <Box
                                                     //ref={scrollableBoxRef}
                                                     sx={{
-                                                        //backgroundColor: '#1976d2',
+                                                        border: '2px solid #1976d2',
                                                         padding: 0,
                                                         boxShadow: '5px 5px 15px rgba(0, 0, 0, 0.3)',
                                                         borderRadius: 1,
@@ -339,9 +304,9 @@ const Patient = () => {
                                                         top: -30, // Mover para cima para criar efeito de flutuação
                                                         left: '50%',
                                                         transform: 'translateX(-50%)',
-                                                        width: '98%',
+                                                        width: boxWidth,
                                                         height: boxHeight, // Altura controlada pelo estado
-                                                        transition: 'height 0.5s ease', // Adiciona uma transição suave
+                                                        transition: 'width 0.5s ease, height 0.5s ease', // Adiciona uma transição suave
                                                         backgroundColor: backgroundColor, // Cor de fundo controlada pelo estado
                                                     }}
                                                 >
@@ -373,7 +338,7 @@ const Patient = () => {
                                                                     backgroundColor: 'none',
                                                                 }}
                                                             >
-                                                                <IconButton onClick={() => retractBox()} size="small" sx={{ marginRight: 0, color: '#fff' }}>
+                                                                <IconButton onClick={() => retractBox()} size="small" sx={{ marginRight: 0, color: '#000' }}>
                                                                     <CloseIcon />
                                                                 </IconButton>
                                                             </Box>
@@ -397,25 +362,35 @@ const Patient = () => {
                                                         marginTop: marginTop + 5, // Aplica a margem superior calculada     
                                                         transition: 'margin-top 0.5s ease', // Adiciona uma transição suave                                                 
                                                     }}
+                                                    className={isExpanded ? 'disabled' : ''} // Adicione a classe CSS quando a Box estiver expandida
                                                 >
                                                     <Tooltip title="View" placement="top">
-                                                        <IconButton onClick={() => handleDetails(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
-                                                            <ArticleIcon />
-                                                        </IconButton>
+                                                        <span>
+                                                            <IconButton onClick={() => handleDetails(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
+                                                                <ArticleIcon />
+                                                            </IconButton>
+                                                        </span>
                                                     </Tooltip>
                                                     <Tooltip title="Edit" placement="top">
-                                                        <IconButton onClick={() => handleEdit(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
-                                                            <EditIcon />
-                                                        </IconButton>
+                                                        <span>
+                                                            <IconButton onClick={() => handleEdit(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
+                                                                <EditIcon />
+                                                            </IconButton>
+                                                        </span>
                                                     </Tooltip>
                                                     <Tooltip title="Delete" placement="top">
-                                                        <IconButton onClick={() => handleDelete(selectedRows)} disabled={multiButtonsDisabled} color="error" size="small" sx={{ marginRight: 2 }}>
-                                                            <DeleteIcon />
-                                                        </IconButton>
+                                                        <span>
+                                                            <IconButton onClick={() => handleDelete(selectedRows)} disabled={multiButtonsDisabled} color="error" size="small" sx={{ marginRight: 2 }}>
+                                                                <DeleteIcon />
+                                                            </IconButton>
+                                                        </span>
                                                     </Tooltip>
                                                 </Box>
                                                 {/* Fim do Cabeçalho Personalizado */}
-                                                <CardContent sx={{ marginTop: 0 }}> {/* Espaço para acomodar o efeito de flutuação */}
+                                                <CardContent 
+                                                sx={{ marginTop: 0 }}
+                                                className={isExpanded ? 'disabled' : ''} // Adicione a classe CSS quando a Box estiver expandida
+                                                > {/* Espaço para acomodar o efeito de flutuação */}
                                                     <DataGrid
                                                         rows={patients}
                                                         columns={columns}

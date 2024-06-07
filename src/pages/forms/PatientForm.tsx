@@ -51,7 +51,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
     return (
         <Box
             sx={{
-                marginTop: 0,
+                marginTop: -10,
                 width: '100%',
                 backgroundColor: 'none'
             }}
@@ -66,27 +66,27 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                         value={formData.id}
                         onChange={handleChange}
                         sx={{
-                            marginBottom: 3,
+                            //marginBottom: 3,
                             '& .MuiInputBase-root': {
                                 backgroundColor: 'white',
                             },
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                    border: 'none',
+                                    //border: 'none',
                                 },
                                 '&:hover fieldset': {
-                                    border: 'none',
+                                    //border: 'none',
                                 },
                                 '&.Mui-focused fieldset': {
-                                    border: 'none',
+                                    //border: 'none',
                                 },
                             },
                             '& .MuiInputLabel-root': {
-                                color: 'black',
+                                //color: 'black',
                             },
                             '& .MuiInputLabel-root.Mui-focused': {
-                                color: 'white',
-                                transform: 'translate(14px, -20px) scale(0.75)',
+                                //color: 'white',
+                                //transform: 'translate(14px, -20px) scale(0.75)',
                             },
                         }}
                     />
@@ -101,27 +101,27 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                         value={formData.firstName}
                         onChange={handleChange}
                         sx={{
-                            marginBottom: 3,
+                            //marginBottom: 3,
                             '& .MuiInputBase-root': {
                                 backgroundColor: 'white',
                             },
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                    border: 'none',
+                                    //border: 'none',
                                 },
                                 '&:hover fieldset': {
-                                    border: 'none',
+                                    //border: 'none',
                                 },
                                 '&.Mui-focused fieldset': {
-                                    border: 'none',
+                                    //border: 'none',
                                 },
                             },
                             '& .MuiInputLabel-root': {
-                                color: 'black',
+                                //color: 'black',
                             },
                             '& .MuiInputLabel-root.Mui-focused': {
-                                color: 'white',
-                                transform: 'translate(14px, -20px) scale(0.75)',
+                                //color: 'white',
+                                //transform: 'translate(14px, -20px) scale(0.75)',
                             },
                         }}
                     />
@@ -134,27 +134,27 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                         value={formData.lastName}
                         onChange={handleChange}
                         sx={{
-                            marginBottom: 3,
+                            //marginBottom: 3,
                             '& .MuiInputBase-root': {
                                 backgroundColor: 'white',
                             },
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                    border: 'none',
+                                    //border: 'none',
                                 },
                                 '&:hover fieldset': {
-                                    border: 'none',
+                                    //border: 'none',
                                 },
                                 '&.Mui-focused fieldset': {
-                                    border: 'none',
+                                    //border: 'none',
                                 },
                             },
                             '& .MuiInputLabel-root': {
-                                color: 'black',
+                                //color: 'black',
                             },
                             '& .MuiInputLabel-root.Mui-focused': {
-                                color: 'white',
-                                transform: 'translate(14px, -20px) scale(0.75)',
+                                //color: 'white',
+                                //transform: 'translate(14px, -20px) scale(0.75)',
                             },
                         }}
                     />
@@ -167,27 +167,27 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                         value={formData.age}
                         onChange={handleChange}
                         sx={{
-                            marginBottom: 3,
+                            //marginBottom: 3,
                             '& .MuiInputBase-root': {
                                 backgroundColor: 'white',
                             },
                             '& .MuiOutlinedInput-root': {
                                 '& fieldset': {
-                                    border: 'none',
+                                    //border: 'none',
                                 },
                                 '&:hover fieldset': {
-                                    border: 'none',
+                                    //border: 'none',
                                 },
                                 '&.Mui-focused fieldset': {
-                                    border: 'none',
+                                    //border: 'none',
                                 },
                             },
                             '& .MuiInputLabel-root': {
-                                color: 'black',
+                                //color: 'black',
                             },
                             '& .MuiInputLabel-root.Mui-focused': {
-                                color: 'white',
-                                transform: 'translate(14px, -20px) scale(0.75)',
+                                //color: 'white',
+                                //transform: 'translate(14px, -20px) scale(0.75)',
                             },
                         }}
                     />
@@ -202,7 +202,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                         justifyContent: 'right',
                     }}
                 >
-                    <Button variant="outlined" sx={{ marginLeft: 2, width: '150px', color: '#fff', borderColor: '#fff' }} onClick={handleClear} startIcon={<ClearAllIcon />}>Clear</Button>
+                    <Button variant="outlined" sx={{ marginLeft: 2, width: '150px', color: '#000', borderColor: '#000' }} onClick={handleClear} startIcon={<ClearAllIcon />}>Clear</Button>
                     <Button variant="contained" color="success" sx={{ marginLeft: 2, width: '150px' }} onClick={handleSubmit} endIcon={<SendIcon />}>Submit</Button>
                 </Grid>
             </Grid>
