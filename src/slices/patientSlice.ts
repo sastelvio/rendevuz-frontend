@@ -5,7 +5,7 @@ import { RootState } from "../store";
 type Patient = {
     id?: string;
     firstName: string;
-    surName: string;
+    surname: string;
     socialSecurity: string;
     email: string;
 };

@@ -15,57 +15,25 @@ import { AppDispatch } from "../store";
 import { CSSTransition } from 'react-transition-group';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { slideUp } from '../animations'
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
-import ArticleIcon from '@mui/icons-material/Article';
 import CloseIcon from '@mui/icons-material/Close';
-import Tooltip from '@mui/material/Tooltip';
-
 import Sidebar from '../layouts/Sidebar';
 import Header from '../layouts/Header';
 import Footer from '../layouts/Footer';
-import PatientForm from "./forms/PatientForm";
-import DialogConfirm from "../components/notification/DialogConfirm";
-
-import { fetchPatients, addPatient, updatePatient, deletePatient } from "../slices/patientSlice";
-
 import '../layouts/style/General.css'
+
+import PatientForm from "./form/PatientForm";
+import PatientFetch from "./fetch/PatientFetch";
 
 const drawerWidth = 240;
 const collapsedWidth = 73;
 
-//table
-const columns: GridColDef[] = [
-    /*{ field: 'id', headerName: 'ID', flex: 0.5 },
-    { field: 'firstName', headerName: 'name', flex: 1 },
-    { field: 'surName', headerName: 'Surname', flex: 1 },
-    {
-        field: 'socialSecurity',
-        headerName: 'socialSecurity',
-        type: 'number',
-        flex: 0.5,
-    },*/
-    { field: 'socialSecurity', headerName: 'Social Security', flex: 1 },
-    {
-        field: 'fullName',
-        headerName: 'Full name',
-        description: 'This column has a value getter and is not sortable.',
-        sortable: false,
-        flex: 2,
-        valueGetter: (params: GridValueGetterParams<any, any>) => `${params.row.firstName || ''} ${params.row.surName || ''}`,
-    },
-    { field: 'email', headerName: 'Email', flex: 1 },
-
-];
-
 const Patient = () => {
     const dispatch: AppDispatch = useAppDispatch();
+
     const navigate = useNavigate();
     const userProfileInfo = useAppSelector((state) => state.auth.basicUserInfo);
 
-    const patients = useAppSelector((state) => state.patient.patients);
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [open, setOpen] = useState(true);
@@ -88,11 +56,7 @@ const Patient = () => {
     const [showFab, setShowFab] = useState(false);
     const scrollableBoxRef = useRef<HTMLDivElement>(null);
 
-    // Fetch patients when the component mounts
-    useEffect(() => {
-        dispatch(fetchPatients());
-    }, [dispatch]);
-
+   
     const handleScroll = () => {
         if (scrollableBoxRef.current) {
             setShowFab(scrollableBoxRef.current.scrollTop > 0);
@@ -105,6 +69,7 @@ const Patient = () => {
         }
     };
 
+    // para lidar com scroll, activa o botao para voltar ao top
     useEffect(() => {
         setShow(true);
         const box = scrollableBoxRef.current;
@@ -116,60 +81,12 @@ const Patient = () => {
         }
     }, []);
 
-    // Função para lidar com o clique no botão "Add Patient"
+    // Função para lidar com o clique no botão "Add (no Header)"
     const handleAddClick = () => {
         expandBox();
     };
 
-    //funcao para apagar linha selecionada
-    const handleDelete = (selectedRows: any[]) => {
-        console.log('Deleting row with ID/s:', selectedRows);
-        setConfirmDialogOpen(true);
-    };
-
-    const handleDeleteConfirm = () => {
-        setConfirmDialogOpen(false);
-        if (selectedRows.length > 0) {
-            //dispatch(deletePatient(selectedRows));
-            console.log("Delete Patients IDs:", selectedRows);
-        }
-    };
-
-    //funcao para editar linha selecionada
-    const handleEdit = (selectedRows: any[]) => {
-        // Adicione aqui a lógica para editar as linhas selecionadas
-        console.log('Editing selected rows:', selectedRows);
-        expandBox();
-    };
-
-    //funcao para editar linha selecionada
-    const handleDetails = (selectedRows: any[]) => {
-        // Adicione aqui a lógica para editar as linhas selecionadas
-        console.log('View details of selected rows:', selectedRows);
-        expandBox();
-    };
-
-
-    // Adicione este estado ao componente Patient
-    const [selectedRows, setSelectedRows] = useState<any[]>([]);
-
-    // Estado para controlar a habilitação dos botões quando so 1 esta selecionado
-    const [oneButtonsDisabled, setOneButtonsDisabled] = useState<boolean>(true);
-
-    // Estado para controlar a habilitação dos botões quando mais de um esta selecionado
-    const [multiButtonsDisabled, setMultiButtonsDisabled] = useState<boolean>(true);
-
-    // Função para lidar com a seleção de linhas
-    const handleRowSelection = (newSelection: any[]) => {
-        setSelectedRows(newSelection);
-
-        // Habilitar/desabilitar botões com base no número de linhas selecionadas
-        setOneButtonsDisabled(newSelection.length !== 1);
-
-        // Habilitar/desabilitar botões com base no número de linhas selecionadas
-        setMultiButtonsDisabled(newSelection.length < 1);
-    };
-
+   
     //FORMULARIO
     const [boxHeight, setBoxHeight] = useState<number>(65); // Altura inicial da Box
     const [boxWidth, setBoxWidth] = useState<string>('98%'); // Cumprimento inicial da Box
@@ -218,10 +135,9 @@ const Patient = () => {
         };
     }, [isExpanded]);
 
-    //DIALOG
-    const [confirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false); // Estado para controlar a exibição do diálogo de confirmação
-
-
+    const handleFormSubmit = (formData: any) => {
+        retractBox(); // Colapsa a Box após a submissão do formulário
+    };
 
     return (
         <Box sx={{ display: "flex", width: '100%', height: '100vh', overflow: 'hidden' }}>
@@ -249,16 +165,16 @@ const Patient = () => {
 
                 {/* Container principal */}
                 <Box
-                    sx={{ 
-                        flexGrow: 1, 
-                        overflowY: 'auto', 
-                        width: '98%', 
-                        marginLeft: 3, 
-                        marginRight: 3, 
-                        marginTop: 0, 
-                        marginBottom: 0, 
+                    sx={{
+                        flexGrow: 1,
+                        overflowY: 'auto',
+                        width: '98%',
+                        marginLeft: 3,
+                        marginRight: 3,
+                        marginTop: 0,
+                        marginBottom: 0,
                     }}
-                    ref={scrollableBoxRef}                    
+                    ref={scrollableBoxRef}
                 >
                     <Toolbar />
                     <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', width: '100%', }}>
@@ -344,82 +260,20 @@ const Patient = () => {
                                                             </Box>
 
                                                             {/* Adicione o componente PatientForm */}
-                                                            <PatientForm onSubmit={(formData) => console.log(formData)} />
+                                                            <PatientForm onSubmit={handleFormSubmit} />
+
                                                         </Box>
                                                     )}
                                                 </Box>
-                                                {/* Cabeçalho Personalizado */}
-                                                <Box
-                                                    sx={{
-                                                        backgroundColor: 'none',
-                                                        borderRadius: '4px',
-                                                        display: 'flex',
-                                                        alignItems: 'left',
-                                                        color: '#000',
-                                                        //marginTop: 5,
-                                                        marginLeft: 2,
-                                                        marginRight: 2,
-                                                        marginTop: marginTop + 5, // Aplica a margem superior calculada     
-                                                        transition: 'margin-top 0.5s ease', // Adiciona uma transição suave                                                 
-                                                    }}
+                                                {/* LISTA DE DADOS */}
+                                                <CardContent
+                                                    sx={{ marginTop: 0 }}
                                                     className={isExpanded ? 'disabled' : ''} // Adicione a classe CSS quando a Box estiver expandida
-                                                >
-                                                    <Tooltip title="View" placement="top">
-                                                        <span>
-                                                            <IconButton onClick={() => handleDetails(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
-                                                                <ArticleIcon />
-                                                            </IconButton>
-                                                        </span>
-                                                    </Tooltip>
-                                                    <Tooltip title="Edit" placement="top">
-                                                        <span>
-                                                            <IconButton onClick={() => handleEdit(selectedRows)} disabled={oneButtonsDisabled} color="inherit" size="small" sx={{ marginRight: 2 }}>
-                                                                <EditIcon />
-                                                            </IconButton>
-                                                        </span>
-                                                    </Tooltip>
-                                                    <Tooltip title="Delete" placement="top">
-                                                        <span>
-                                                            <IconButton onClick={() => handleDelete(selectedRows)} disabled={multiButtonsDisabled} color="error" size="small" sx={{ marginRight: 2 }}>
-                                                                <DeleteIcon />
-                                                            </IconButton>
-                                                        </span>
-                                                    </Tooltip>
-                                                </Box>
-                                                {/* Fim do Cabeçalho Personalizado */}
-                                                <CardContent 
-                                                sx={{ marginTop: 0 }}
-                                                className={isExpanded ? 'disabled' : ''} // Adicione a classe CSS quando a Box estiver expandida
-                                                > {/* Espaço para acomodar o efeito de flutuação */}
-                                                    <DataGrid
-                                                        rows={patients}
-                                                        columns={columns}
-                                                        getRowId={(row) => row.socialSecurity}
-                                                        // Adicione a propriedade `onSelectionModelChange` para capturar as seleções de linha
-                                                        onRowSelectionModelChange={handleRowSelection}
-                                                        initialState={{
-                                                            pagination: {
-                                                                paginationModel: { page: 0, pageSize: 25 },
-                                                            },
-                                                        }}
-                                                        pageSizeOptions={[25, 50]}
-                                                        checkboxSelection
-                                                        sx={{
-                                                            '& .MuiDataGrid-cell': {
-                                                                cursor: 'pointer',
-                                                            },
-                                                            '& .MuiDataGrid-row': {
-                                                                '&:hover': {
-                                                                    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-                                                                },
-                                                                '&.Mui-selected': {
-                                                                    backgroundColor: 'rgba(25, 118, 210, 0.12) !important',
-                                                                },
-                                                            },
-                                                            '& .MuiDataGrid-cell:focus, & .MuiDataGrid-cell:focus-within': {
-                                                                outline: 'none',
-                                                            },
-                                                        }}
+                                                > 
+                                                    <PatientFetch
+                                                          expandBox={expandBox}
+                                                          isExpanded={isExpanded}
+                                                          marginTop={marginTop}
                                                     />
                                                 </CardContent>
                                             </Box>
@@ -449,14 +303,6 @@ const Patient = () => {
                 >
                     <KeyboardArrowUpIcon />
                 </Fab>
-                <DialogConfirm
-                    open={confirmDialogOpen}
-                    title="Confirm Delete"
-                    message="Are you sure you want to delete the selected patients?"
-                    severity="error" // Severidade
-                    onClose={() => setConfirmDialogOpen(false)}
-                    onConfirm={handleDeleteConfirm}
-                />
             </Box >
         </Box >
     );
