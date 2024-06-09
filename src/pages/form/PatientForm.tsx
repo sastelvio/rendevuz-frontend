@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     TextField,
     Button,
@@ -11,54 +11,50 @@ import ClearAllIcon from '@mui/icons-material/ClearAll';
 import { useAppDispatch } from '../../hooks/redux-hooks';
 import { addPatient, updatePatient } from '../../slices/patientSlice';
 
-interface PatientFormProps {
-    onSubmit: (formData: FormData) => void;
-}
+type PatientFormProps = {
+    editMode: boolean;
+    formData: FormData | null;
+    onSubmit: () => void;
+};
 
-interface FormData {
-    id: string;
-    firstName: string;
-    surname: string;
-    socialSecurity: string;
-    email: string;
-}
-
-const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
-    const [formData, setFormData] = useState<FormData>({
+const PatientForm: React.FC<PatientFormProps> = ({ onSubmit, editMode, formData }) => {
+    const dispatch = useAppDispatch();
+    const [formState, setFormState] = useState({
         id: '',
         firstName: '',
         surname: '',
-        socialSecurity: '',
         email: '',
+        socialSecurity: ''
     });
 
-    const dispatch = useAppDispatch();
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData(prevData => ({
-            ...prevData,
-            [name]: value
-        }));
-    };
-
-    const handleSubmit = () => {
-        if (formData.id) {
-            dispatch(updatePatient(formData));
-        } else {
-            dispatch(addPatient(formData));
+    useEffect(() => {
+        if (formData) {
+            setFormState({
+                id: formData.get('id') as string,
+                firstName: formData.get('firstName') as string,
+                surname: formData.get('surname') as string,
+                email: formData.get('email') as string,
+                socialSecurity: formData.get('socialSecurity') as string,
+            });
         }
-        onSubmit(formData);
+    }, [formData]);
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setFormState({
+            ...formState,
+            [event.target.name]: event.target.value,
+        });
     };
 
-    const handleClear = () => {
-        setFormData({
-            id: '',
-            firstName: '',
-            surname: '',
-            socialSecurity: '',
-            email: '',
-        });
+    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault(); // Prevent the default form submission behavior
+        if (formState.id) {
+            console.log(formState);
+            dispatch(updatePatient(formState));
+        } else {
+            dispatch(addPatient(formState));
+        }
+        onSubmit();
     };
 
     return (
@@ -76,7 +72,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                         label="ID"
                         name="id"
                         disabled
-                        value={formData.id}
+                        value={formState.id}
                         onChange={handleChange}
                         sx={{
                             '& .MuiInputBase-root': {
@@ -98,7 +94,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                         fullWidth
                         label="First Name"
                         name="firstName"
-                        value={formData.firstName}
+                        value={formState.firstName}
                         onChange={handleChange}
                         sx={{
                             '& .MuiInputBase-root': {
@@ -115,11 +111,11 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                     />
                 </Grid>
                 <Grid item xs={6}>
-                <TextField
+                    <TextField
                         fullWidth
                         label="Surname"
                         name="surname"
-                        value={formData.surname}
+                        value={formState.surname}
                         onChange={handleChange}
                         sx={{
                             '& .MuiInputBase-root': {
@@ -140,7 +136,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                         fullWidth
                         label="Social Security"
                         name="socialSecurity"
-                        value={formData.socialSecurity}
+                        value={formState.socialSecurity}
                         onChange={handleChange}
                         sx={{
                             '& .MuiInputBase-root': {
@@ -161,7 +157,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                         fullWidth
                         label="Email"
                         name="email"
-                        value={formData.email}
+                        value={formState.email}
                         onChange={handleChange}
                         sx={{
                             '& .MuiInputBase-root': {
@@ -186,8 +182,18 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit }) => {
                         marginTop: 5,
                     }}
                 >
-                    <Button variant="outlined" sx={{ marginLeft: 2, width: '150px', color: '#000', borderColor: '#000' }} onClick={handleClear} startIcon={<ClearAllIcon />}>Clear</Button>
-                    <Button variant="contained" color="success" sx={{ marginLeft: 2, width: '150px' }} onClick={handleSubmit} endIcon={<SendIcon />}>Submit</Button>
+                    <Button
+                        variant="contained"
+                        color="success"
+                        sx={{
+                            marginLeft: 2,
+                            width: '150px'
+                        }}
+                        onClick={handleSubmit}
+                        endIcon={<SendIcon />}
+                    >
+                        {editMode ? 'Update' : 'Create'}
+                    </Button>
                 </Grid>
             </Grid>
         </Box>

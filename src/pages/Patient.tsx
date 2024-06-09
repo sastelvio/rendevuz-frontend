@@ -81,16 +81,34 @@ const Patient = () => {
         }
     }, []);
 
+
+    //FORMULARIO   
+
+    // Estado para manter os dados do paciente selecionado
+    const [selectedPatient, setSelectedPatient] = useState<FormData | null>(null);
+     
+    const [boxHeight, setBoxHeight] = useState<number>(65); // Altura inicial do Container do formulario
+    const [boxWidth, setBoxWidth] = useState<string>('98%'); // Cumprimento inicial do Container do formulario
+    const [isExpanded, setIsExpanded] = useState<boolean>(false); // Estado para controlar se o Container do formularioestá expandida
+    const [isEditing, setIsEditing] = useState<boolean>(false); // Estado para controlar se a Box está expandida
+
+    const handleFormSubmit = () => {
+        retractBox();
+        setSelectedPatient(null); 
+    };
+
     // Função para lidar com o clique no botão "Add (no Header)"
     const handleAddClick = () => {
+        setIsEditing(false);
         expandBox();
     };
 
-   
-    //FORMULARIO
-    const [boxHeight, setBoxHeight] = useState<number>(65); // Altura inicial da Box
-    const [boxWidth, setBoxWidth] = useState<string>('98%'); // Cumprimento inicial da Box
-    const [isExpanded, setIsExpanded] = useState<boolean>(false); // Estado para controlar se a Box está expandida
+    // Função para editar paciente
+    const handleEditPatient = (patientData: FormData) => {
+        setIsEditing(true);
+        setSelectedPatient(patientData);
+        expandBox();
+    };
 
     // Função para aumentar a altura e mover os elementos abaixo
     const expandBox = () => {
@@ -107,6 +125,7 @@ const Patient = () => {
         setBoxHeight(65); // Retorna a altura para o valor original
         setBoxWidth('98%'); // Retorna ao cumprimento para o valor original
         setIsExpanded(false); // Define o estado como não expandido
+        setSelectedPatient(null); 
     };
 
     const [showChildren, setShowChildren] = useState(false);
@@ -133,11 +152,7 @@ const Patient = () => {
             clearTimeout(timer);
             clearTimeout(colorTimer);
         };
-    }, [isExpanded]);
-
-    const handleFormSubmit = (formData: any) => {
-        retractBox(); // Colapsa a Box após a submissão do formulário
-    };
+    }, [isExpanded]);    
 
     return (
         <Box sx={{ display: "flex", width: '100%', height: '100vh', overflow: 'hidden' }}>
@@ -260,7 +275,7 @@ const Patient = () => {
                                                             </Box>
 
                                                             {/* Adicione o componente PatientForm */}
-                                                            <PatientForm onSubmit={handleFormSubmit} />
+                                                            <PatientForm onSubmit={handleFormSubmit} editMode={isEditing} formData={selectedPatient} />
 
                                                         </Box>
                                                     )}
@@ -274,6 +289,7 @@ const Patient = () => {
                                                           expandBox={expandBox}
                                                           isExpanded={isExpanded}
                                                           marginTop={marginTop}
+                                                          onEdit={handleEditPatient}
                                                     />
                                                 </CardContent>
                                             </Box>
