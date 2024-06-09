@@ -48,7 +48,6 @@ const PatientForm: React.FC<PatientFormProps> = ({ onSubmit, editMode, formData 
     const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault(); // Prevent the default form submission behavior
         if (formState.id) {
-            console.log(formState);
             dispatch(updatePatient(formState));
         } else {
             dispatch(addPatient(formState));

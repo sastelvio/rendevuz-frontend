@@ -63,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
                     color="inherit"
                     aria-label="menu"
                     onClick={toggleDrawer}
-                    sx={{ marginLeft: -0.75 }}
+                    sx={{ marginLeft: -0.99 }}
                 >
                     <MenuIcon sx={{ fontSize: 25 }} />
                 </IconButton>

@@ -24,6 +24,7 @@ import '../layouts/style/General.css'
 
 import PatientForm from "./form/PatientForm";
 import PatientFetch from "./fetch/PatientFetch";
+import PatientView from "./view/PatientView";
 
 const drawerWidth = 240;
 const collapsedWidth = 73;
@@ -56,7 +57,7 @@ const Patient = () => {
     const [showFab, setShowFab] = useState(false);
     const scrollableBoxRef = useRef<HTMLDivElement>(null);
 
-   
+
     const handleScroll = () => {
         if (scrollableBoxRef.current) {
             setShowFab(scrollableBoxRef.current.scrollTop > 0);
@@ -86,34 +87,41 @@ const Patient = () => {
 
     // Estado para manter os dados do paciente selecionado
     const [selectedPatient, setSelectedPatient] = useState<FormData | null>(null);
-     
+
     const [boxHeight, setBoxHeight] = useState<number>(65); // Altura inicial do Container do formulario
     const [boxWidth, setBoxWidth] = useState<string>('98%'); // Cumprimento inicial do Container do formulario
     const [isExpanded, setIsExpanded] = useState<boolean>(false); // Estado para controlar se o Container do formularioestá expandida
-    const [isEditing, setIsEditing] = useState<boolean>(false); // Estado para controlar se a Box está expandida
+    const [isEditing, setIsEditing] = useState<boolean>(false); // Estado para controlar se esta em modo editar
+    const [viewingPatient, setViewingPatient] = useState<FormData | null>(null); // Estado para controlar a visualização do paciente
+
 
     const handleFormSubmit = () => {
         retractBox();
-        setSelectedPatient(null); 
+        setSelectedPatient(null);
     };
 
     // Função para lidar com o clique no botão "Add (no Header)"
     const handleAddClick = () => {
         setIsEditing(false);
-        expandBox();
+        expandBox('70%', 500);
     };
 
     // Função para editar paciente
     const handleEditPatient = (patientData: FormData) => {
         setIsEditing(true);
         setSelectedPatient(patientData);
-        expandBox();
+        expandBox('70%', 500);
+    };
+
+    const handleViewPatient = (patientData: FormData) => {
+        setViewingPatient(patientData); // Define o estado para exibir o PatientView
+        expandBox('50%', 400);
     };
 
     // Função para aumentar a altura e mover os elementos abaixo
-    const expandBox = () => {
-        setBoxHeight(500); // Aumenta a altura para 600px
-        setBoxWidth('80%'); // Aumenta a cumprimento para 600px
+    const expandBox = (bWidth: string, bHeight: number) => {
+        setBoxHeight(bHeight); // Aumenta a altura para 600px
+        setBoxWidth(bWidth); // Aumenta a cumprimento para 600px
         setIsExpanded(true); // Define o estado como expandido
     };
 
@@ -125,7 +133,8 @@ const Patient = () => {
         setBoxHeight(65); // Retorna a altura para o valor original
         setBoxWidth('98%'); // Retorna ao cumprimento para o valor original
         setIsExpanded(false); // Define o estado como não expandido
-        setSelectedPatient(null); 
+        setSelectedPatient(null);
+        setViewingPatient(null);
     };
 
     const [showChildren, setShowChildren] = useState(false);
@@ -152,7 +161,7 @@ const Patient = () => {
             clearTimeout(timer);
             clearTimeout(colorTimer);
         };
-    }, [isExpanded]);    
+    }, [isExpanded]);
 
     return (
         <Box sx={{ display: "flex", width: '100%', height: '100vh', overflow: 'hidden' }}>
@@ -273,9 +282,17 @@ const Patient = () => {
                                                                     <CloseIcon />
                                                                 </IconButton>
                                                             </Box>
-
+                                                            {selectedPatient ? (
+                                                                <PatientForm onSubmit={handleFormSubmit} editMode={isEditing} formData={selectedPatient} />
+                                                            ) : (
+                                                                viewingPatient ? (
+                                                                    <PatientView formData={viewingPatient} /> // Exibe os detalhes do paciente
+                                                                ) : (
+                                                                    <PatientForm onSubmit={handleFormSubmit} editMode={isEditing} formData={selectedPatient} />
+                                                                )
+                                                            )}
                                                             {/* Adicione o componente PatientForm */}
-                                                            <PatientForm onSubmit={handleFormSubmit} editMode={isEditing} formData={selectedPatient} />
+                                                            {/*<PatientForm onSubmit={handleFormSubmit} editMode={isEditing} formData={selectedPatient} />*/}
 
                                                         </Box>
                                                     )}
@@ -284,12 +301,12 @@ const Patient = () => {
                                                 <CardContent
                                                     sx={{ marginTop: 0 }}
                                                     className={isExpanded ? 'disabled' : ''} // Adicione a classe CSS quando a Box estiver expandida
-                                                > 
+                                                >
                                                     <PatientFetch
-                                                          expandBox={expandBox}
-                                                          isExpanded={isExpanded}
-                                                          marginTop={marginTop}
-                                                          onEdit={handleEditPatient}
+                                                        isExpanded={isExpanded}
+                                                        marginTop={marginTop}
+                                                        onEdit={handleEditPatient}
+                                                        onView={handleViewPatient}
                                                     />
                                                 </CardContent>
                                             </Box>

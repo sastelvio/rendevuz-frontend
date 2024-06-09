@@ -11,10 +11,10 @@ import { fetchPatients, addPatient, updatePatient, deletePatient } from "../../s
 import { AppDispatch } from "../../store";
 
 type PatientFetchProps = {
-    expandBox: () => void;
     isExpanded: boolean;
     marginTop: number;
     onEdit: (patientData: FormData) => void;
+    onView: (patientData: FormData) => void; 
 };
 
 const columns: GridColDef[] = [
@@ -30,7 +30,7 @@ const columns: GridColDef[] = [
     { field: 'email', headerName: 'Email', flex: 1 },
 ];
 
-const PatientFetch: React.FC<PatientFetchProps> = ({ expandBox, isExpanded, marginTop, onEdit, }) => {
+const PatientFetch: React.FC<PatientFetchProps> = ({ isExpanded, marginTop, onEdit, onView }) => {
 
     const dispatch: AppDispatch = useAppDispatch();
 
@@ -46,6 +46,7 @@ const PatientFetch: React.FC<PatientFetchProps> = ({ expandBox, isExpanded, marg
 
     //funcao para apagar linha selecionada
     const handleDelete = (selectedRows: any[]) => {
+        console.log('Deleting row with ID/s:', selectedRows);
         setConfirmDialogOpen(true);
     };
 
@@ -60,7 +61,7 @@ const PatientFetch: React.FC<PatientFetchProps> = ({ expandBox, isExpanded, marg
 
     // Função para editar linha selecionada
     const handleEdit = (selectedRows: any[]) => {
-        const selectedPatient = patientsData.find(patient => patient.socialSecurity === selectedRows[0]);
+        const selectedPatient = patientsData.find(patient => patient.id === selectedRows[0]);
         
         if (selectedPatient) {
             // Converta o objeto Patient para FormData
@@ -80,9 +81,22 @@ const PatientFetch: React.FC<PatientFetchProps> = ({ expandBox, isExpanded, marg
 
     //funcao para editar linha selecionada
     const handleDetails = (selectedRows: any[]) => {
-        // Adicione aqui a lógica para editar as linhas selecionadas
-        console.log('View details of selected rows:', selectedRows);
-        expandBox();
+        const selectedPatient = patientsData.find(patient => patient.id === selectedRows[0]);
+        
+        if (selectedPatient) {
+            // Converta o objeto Patient para FormData
+            const formData = new FormData();
+            if (selectedPatient.id !== undefined) {
+                formData.append('id', selectedPatient.id.toString());
+            }
+            formData.append('firstName', selectedPatient.firstName);
+            formData.append('surname', selectedPatient.surname);
+            formData.append('email', selectedPatient.email);
+            formData.append('socialSecurity', selectedPatient.socialSecurity);
+            // Adicione outros campos conforme necessário
+
+            onView(formData); // Passe o FormData para a função onEdit
+        }
     };
 
 
