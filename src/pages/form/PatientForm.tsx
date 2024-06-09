@@ -6,7 +6,6 @@ import {
     Box
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import ClearAllIcon from '@mui/icons-material/ClearAll';
 
 import { useAppDispatch } from '../../hooks/redux-hooks';
 import { addPatient, updatePatient } from '../../slices/patientSlice';

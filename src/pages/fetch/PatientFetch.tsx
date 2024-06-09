@@ -46,16 +46,16 @@ const PatientFetch: React.FC<PatientFetchProps> = ({ expandBox, isExpanded, marg
 
     //funcao para apagar linha selecionada
     const handleDelete = (selectedRows: any[]) => {
-        console.log('Deleting row with ID/s:', selectedRows);
         setConfirmDialogOpen(true);
     };
 
-    const handleDeleteConfirm = () => {
-        setConfirmDialogOpen(false);
+    const handleDeleteConfirm = () => {        
         if (selectedRows.length > 0) {
-            //dispatch(deletePatient(selectedRows));
-            console.log("Delete Patients IDs:", selectedRows);
+            selectedRows.forEach(rowId => {
+                dispatch(deletePatient(rowId));
+            });
         }
+        setConfirmDialogOpen(false);
     };
 
     // Função para editar linha selecionada
@@ -154,7 +154,7 @@ const PatientFetch: React.FC<PatientFetchProps> = ({ expandBox, isExpanded, marg
                 <DataGrid
                     rows={patientsData}
                     columns={columns}
-                    getRowId={(row) => row.socialSecurity}
+                    getRowId={(row) => row.id}
                     onRowSelectionModelChange={handleRowSelection}
                     initialState={{
                         pagination: {
