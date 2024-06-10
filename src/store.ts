@@ -5,6 +5,7 @@ import notificationReducer from "./slices/notificationSlice";
 import { axiosMiddleware } from "./api/middleware";
 
 import patientReducer from './slices/patientSlice';
+import appointmentReducer from './slices/appointmentSlice';
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     user: userReducer,
     notification: notificationReducer,
     patient: patientReducer,
+    appointment: appointmentReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(axiosMiddleware),

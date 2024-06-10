@@ -3,6 +3,7 @@ import { Drawer, Box, IconButton, Typography, List, ListItem, ListItemIcon, List
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIcon from '@mui/icons-material/Home';
 import PermContactCalendarIcon from '@mui/icons-material/PermContactCalendar';
+import EventIcon from '@mui/icons-material/Event';
 import { Link, useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -18,7 +19,8 @@ const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
 
     const menuItems = [
         { text: "Home", icon: <HomeIcon fontSize="medium" />, path: "/" },
-        { text: "Patient", icon: <PermContactCalendarIcon fontSize="medium" />, path: "/patient" }
+        { text: "Patient", icon: <PermContactCalendarIcon fontSize="medium" />, path: "/patient" },
+        { text: "Appointment", icon: <EventIcon fontSize="medium" />, path: "/appointment" }
     ];
 
     return (

@@ -22,14 +22,14 @@ import Header from '../layouts/Header';
 import Footer from '../layouts/Footer';
 import '../layouts/style/General.css'
 
-import PatientForm from "./form/PatientForm";
-import PatientFetch from "./fetch/PatientFetch";
-import PatientView from "./view/PatientView";
+import AppointmentForm from "./form/AppointmentForm";
+import AppointmentFetch from "./fetch/AppointmentFetch";
+import AppointmentView from "./view/AppointmentView";
 
 const drawerWidth = 240;
 const collapsedWidth = 73;
 
-const Patient = () => {
+const Appointment = () => {
     const dispatch: AppDispatch = useAppDispatch();
 
     const navigate = useNavigate();
@@ -82,39 +82,38 @@ const Patient = () => {
         }
     }, []);
 
-
     //FORMULARIO   
 
     // Estado para manter os dados do paciente selecionado
-    const [selectedPatient, setSelectedPatient] = useState<FormData | null>(null);
+    const [selectedAppointment, setSelectedAppointment] = useState<FormData | null>(null);
 
     const [boxHeight, setBoxHeight] = useState<number>(65); // Altura inicial do Container do formulario
     const [boxWidth, setBoxWidth] = useState<string>('98%'); // Cumprimento inicial do Container do formulario
     const [isExpanded, setIsExpanded] = useState<boolean>(false); // Estado para controlar se o Container do formularioestá expandida
     const [isEditing, setIsEditing] = useState<boolean>(false); // Estado para controlar se esta em modo editar
-    const [viewingPatient, setViewingPatient] = useState<FormData | null>(null); // Estado para controlar a visualização do paciente
+    const [viewingAppointment, setViewingAppointment] = useState<FormData | null>(null); // Estado para controlar a visualização do paciente
 
 
     const handleFormSubmit = () => {
         retractBox();
-        setSelectedPatient(null);
+        setSelectedAppointment(null);
     };
 
     // Função para lidar com o clique no botão "Add (no Header)"
     const handleAddClick = () => {
         setIsEditing(false);
-        expandBox('70%', 500);
+        expandBox('70%', 650);
     };
 
     // Função para editar paciente
-    const handleEditPatient = (patientData: FormData) => {
+    const handleEditAppointment = (appointmentData: FormData) => {
         setIsEditing(true);
-        setSelectedPatient(patientData);
-        expandBox('70%', 500);
+        setSelectedAppointment(appointmentData);
+        expandBox('70%', 650);  
     };
 
-    const handleViewPatient = (patientData: FormData) => {
-        setViewingPatient(patientData); // Define o estado para exibir o PatientView
+    const handleViewAppointment = (appointmentData: FormData) => {
+        setViewingAppointment(appointmentData); // Define o estado para exibir o AppointmentView
         expandBox('50%', 400);
     };
 
@@ -126,15 +125,15 @@ const Patient = () => {
     };
 
     // Calcula a margem superior dos elementos abaixo do Formulario
-    const marginTop = isExpanded ? 57 : 0;
+    const marginTop = isExpanded ? 77 : 0;
 
     // Função para retrair a Box ao tamanho original
     const retractBox = () => {
         setBoxHeight(65); // Retorna a altura para o valor original
         setBoxWidth('98%'); // Retorna ao cumprimento para o valor original
         setIsExpanded(false); // Define o estado como não expandido
-        setSelectedPatient(null);
-        setViewingPatient(null);
+        setSelectedAppointment(null);
+        setViewingAppointment(null);
     };
 
     const [showChildren, setShowChildren] = useState(false);
@@ -250,7 +249,7 @@ const Patient = () => {
                                                         backgroundColor: backgroundColor, // Cor de fundo controlada pelo estado
                                                     }}
                                                 >
-                                                    {/* Adicione o componente PatientForm apenas se a Box estiver expandida */}
+                                                    {/* Adicione o componente AppointmentForm apenas se a Box estiver expandida */}
                                                     {isExpanded && showChildren && (
                                                         <Box
                                                             sx={{
@@ -282,17 +281,17 @@ const Patient = () => {
                                                                     <CloseIcon />
                                                                 </IconButton>
                                                             </Box>
-                                                            {selectedPatient ? (
-                                                                <PatientForm onSubmit={handleFormSubmit} editMode={isEditing} formData={selectedPatient} />
+                                                            {selectedAppointment ? (
+                                                                <AppointmentForm onSubmit={handleFormSubmit} editMode={isEditing} formData={selectedAppointment} />
                                                             ) : (
-                                                                viewingPatient ? (
-                                                                    <PatientView formData={viewingPatient} /> // Exibe os detalhes do paciente
+                                                                viewingAppointment ? (
+                                                                    <AppointmentView formData={viewingAppointment} /> // Exibe os detalhes do paciente
                                                                 ) : (
-                                                                    <PatientForm onSubmit={handleFormSubmit} editMode={isEditing} formData={selectedPatient} />
+                                                                    <AppointmentForm onSubmit={handleFormSubmit} editMode={isEditing} formData={selectedAppointment} />
                                                                 )
                                                             )}
-                                                            {/* Adicione o componente PatientForm */}
-                                                            {/*<PatientForm onSubmit={handleFormSubmit} editMode={isEditing} formData={selectedPatient} />*/}
+                                                            {/* Adicione o componente AppointmentForm */}
+                                                            {/*<AppointmentForm onSubmit={handleFormSubmit} editMode={isEditing} formData={selectedAppointment} />*/}
 
                                                         </Box>
                                                     )}
@@ -302,11 +301,11 @@ const Patient = () => {
                                                     sx={{ marginTop: 0 }}
                                                     className={isExpanded ? 'disabled' : ''} // Adicione a classe CSS quando a Box estiver expandida
                                                 >
-                                                    <PatientFetch
+                                                    <AppointmentFetch
                                                         isExpanded={isExpanded}
                                                         marginTop={marginTop}
-                                                        onEdit={handleEditPatient}
-                                                        onView={handleViewPatient}
+                                                        onEdit={handleEditAppointment}
+                                                        onView={handleViewAppointment}
                                                     />
                                                 </CardContent>
                                             </Box>
@@ -341,4 +340,4 @@ const Patient = () => {
     );
 };
 
-export default Patient;
+export default Appointment;

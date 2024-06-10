@@ -1,14 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "../api/axiosInstance";
 import { RootState } from "../store";
+import { Patient } from "./types";
 
-type Patient = {
-    id?: string;
-    firstName: string;
-    surname: string;
-    socialSecurity: string;
-    email: string;
-};
 
 type PatientState = {
     patients: Patient[];

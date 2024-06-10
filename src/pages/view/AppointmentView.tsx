@@ -5,11 +5,11 @@ import {
     Typography
 } from '@mui/material';
 
-interface PatientViewProps {
+interface AppointmentViewProps {
     formData: FormData;
 }
 
-const PatientView: React.FC<PatientViewProps> = ({ formData }) => {
+const AppointmentView: React.FC<AppointmentViewProps> = ({ formData }) => {
     const [formState, setFormState] = useState({
         id: '',
         firstName: '',
@@ -84,4 +84,4 @@ const PatientView: React.FC<PatientViewProps> = ({ formData }) => {
     );
 }
 
-export default PatientView;
+export default AppointmentView;

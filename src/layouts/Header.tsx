@@ -106,6 +106,8 @@ const Header: React.FC<HeaderProps> = ({
                 return 'DASHBOARD';
             case '/patient':
                 return 'PATIENT';
+            case '/appointment':
+                return 'APPOINTMENT'
             case '/profile':
                 return 'USER PROFILE';
             case '/settings':
@@ -128,7 +130,9 @@ const Header: React.FC<HeaderProps> = ({
     useEffect(() => {
         if (location.pathname === "/patient") {
             setShowAddButton(true);
-        } else {
+        } else if (location.pathname === "/appointment") {
+            setShowAddButton(true);
+        }else {
             setShowAddButton(false);
         }
     }, [location.pathname]); // Execute o efeito sempre que a localização da rota mudar

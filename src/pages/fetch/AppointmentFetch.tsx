@@ -7,42 +7,53 @@ import EditIcon from "@mui/icons-material/Edit";
 import ArticleIcon from "@mui/icons-material/Article";
 import DialogConfirm from "../../components/notification/DialogConfirm";
 
-import { fetchPatients, deletePatient } from "../../slices/patientSlice";
+import { fetchAppointments, deleteAppointment } from "../../slices/appointmentSlice";
+import { fetchPatients } from "../../slices/patientSlice";
 import { AppDispatch } from "../../store";
 
-type PatientFetchProps = {
+type AppointmentFetchProps = {
     isExpanded: boolean;
     marginTop: number;
-    onEdit: (patientData: FormData) => void;
-    onView: (patientData: FormData) => void;
+    onEdit: (appointmentData: FormData) => void;
+    onView: (appointmentData: FormData) => void;
 };
 
 const columns: GridColDef[] = [
-    { field: 'socialSecurity', headerName: 'Social Security', flex: 1 },
     {
-        field: 'fullName',
-        headerName: 'Full name',
-        description: 'This column has a value getter and is not sortable.',
-        sortable: false,
-        flex: 2,
-        valueGetter: (params: GridValueGetterParams<any, any>) => `${params.row.firstName || ''} ${params.row.surname || ''}`,
+        field: 'patient',
+        headerName: 'Patient',
+        flex: 1,
+        valueGetter: (params: GridValueGetterParams) => {
+            const patientResponse = params.row.patientResponse;
+            return patientResponse ? `${patientResponse.socialSecurity} | ${patientResponse.firstName} ${patientResponse.surname}` : 'Unknown';
+        }
     },
-    { field: 'email', headerName: 'Email', flex: 1 },
+    { field: 'schedule', headerName: 'Schedule', flex: 1 },
+    { field: 'description', headerName: 'Description', flex: 2, },
 ];
 
-const PatientFetch: React.FC<PatientFetchProps> = ({ isExpanded, marginTop, onEdit, onView }) => {
+const AppointmentFetch: React.FC<AppointmentFetchProps> = ({ isExpanded, marginTop, onEdit, onView }) => {
 
     const dispatch: AppDispatch = useAppDispatch();
 
-    // Fetch patients when the component mounts
+    // Fetch appointments when the component mounts
     useEffect(() => {
+        dispatch(fetchAppointments());
         dispatch(fetchPatients());
     }, [dispatch]);
 
+    const appointmentsData = useAppSelector((state) => state.appointment.appointments);
     const patientsData = useAppSelector((state) => state.patient.patients);
-
     const [confirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
 
+    // Adicione este estado ao componente Appointment
+    const [selectedRows, setSelectedRows] = useState<any[]>([]);
+
+    // Estado para controlar a habilitação dos botões quando so 1 esta selecionado
+    const [oneButtonsDisabled, setOneButtonsDisabled] = useState<boolean>(true);
+
+    // Estado para controlar a habilitação dos botões quando mais de um esta selecionado
+    const [multiButtonsDisabled, setMultiButtonsDisabled] = useState<boolean>(true);
 
     //funcao para apagar linha selecionada
     const handleDelete = (selectedRows: any[]) => {
@@ -53,59 +64,90 @@ const PatientFetch: React.FC<PatientFetchProps> = ({ isExpanded, marginTop, onEd
     const handleDeleteConfirm = () => {
         if (selectedRows.length > 0) {
             selectedRows.forEach(rowId => {
-                dispatch(deletePatient(rowId));
+                dispatch(deleteAppointment(rowId));
             });
         }
         setConfirmDialogOpen(false);
     };
 
     // Função para editar linha selecionada
+    /*
     const handleEdit = (selectedRows: any[]) => {
-        const selectedPatient = patientsData.find(patient => patient.id === selectedRows[0]);
+        const selectedAppointment = appointmentsData.find(appointment => appointment.id === selectedRows[0]);
 
-        if (selectedPatient) {
-            // Converta o objeto Patient para FormData
+        if (selectedAppointment) {
+            // Converta o objeto Appointment para FormData
             const formData = new FormData();
-            if (selectedPatient.id !== undefined) {
-                formData.append('id', selectedPatient.id.toString());
-            }
-            formData.append('firstName', selectedPatient.firstName);
-            formData.append('surname', selectedPatient.surname);
-            formData.append('email', selectedPatient.email);
-            formData.append('socialSecurity', selectedPatient.socialSecurity);
+            if (selectedAppointment.id !== undefined) {
+                formData.append('id', selectedAppointment.id.toString());
 
+            }
+            formData.append('description', selectedAppointment.description);
+            formData.append('schedule', selectedAppointment.schedule);
+            if (selectedAppointment && selectedAppointment.patient) {
+                formData.append('patient', JSON.stringify(selectedAppointment.patient));
+            } else {
+                // Faça algo se a propriedade patient estiver ausente
+                console.log("Patient data not found");
+            }
+
+
+            console.log(selectedAppointment);
+            onEdit(formData); // Passe o FormData para a função onEdit
+
+        }
+    };
+    */
+    const handleEdit = (selectedRows: any[]) => {
+        const selectedAppointment = appointmentsData.find(appointment => appointment.id === selectedRows[0]);
+
+        if (selectedAppointment) {
+            // Converta o objeto Appointment para FormData
+            const formData = new FormData();
+            if (selectedAppointment.id !== undefined) {
+                formData.append('id', selectedAppointment.id.toString());
+            }
+            formData.append('description', selectedAppointment.description);
+            formData.append('schedule', selectedAppointment.schedule);
+
+            if (selectedAppointment.patientResponse) {
+                formData.append('patientResponse', JSON.stringify(selectedAppointment.patientResponse));
+
+                // Imprima os dados de patientResponse no console
+                //console.log('Patient ID:', selectedAppointment.patientResponse.id);
+                //console.log('Patient Social Security:', selectedAppointment.patientResponse.socialSecurity);
+                //console.log('Patient First Name:', selectedAppointment.patientResponse.firstName);
+                //console.log('Patient Surname:', selectedAppointment.patientResponse.surname);
+                //console.log('Patient Email:', selectedAppointment.patientResponse.email);
+            } else {
+                // Faça algo se a propriedade patient estiver ausente
+                console.log("Patient data not found");
+            }
+            
             onEdit(formData); // Passe o FormData para a função onEdit
         }
     };
 
+
     //funcao para editar linha selecionada
     const handleDetails = (selectedRows: any[]) => {
-        const selectedPatient = patientsData.find(patient => patient.id === selectedRows[0]);
+        const selectedAppointment = appointmentsData.find(appointment => appointment.id === selectedRows[0]);
 
-        if (selectedPatient) {
-            // Converta o objeto Patient para FormData
+        if (selectedAppointment) {
+            // Converta o objeto Appointment para FormData
             const formData = new FormData();
-            if (selectedPatient.id !== undefined) {
-                formData.append('id', selectedPatient.id.toString());
+            if (selectedAppointment.id !== undefined) {
+                formData.append('id', selectedAppointment.id.toString());
             }
-            formData.append('firstName', selectedPatient.firstName);
-            formData.append('surname', selectedPatient.surname);
-            formData.append('email', selectedPatient.email);
-            formData.append('socialSecurity', selectedPatient.socialSecurity);
+            formData.append('description', selectedAppointment.description);
+            formData.append('schedule', selectedAppointment.schedule);
+            formData.append('patient', JSON.stringify(selectedAppointment.patientResponse));
 
             onView(formData); // Passe o FormData para a função onEdit
         }
     };
 
 
-    // Adicione este estado ao componente Patient
-    const [selectedRows, setSelectedRows] = useState<any[]>([]);
-
-    // Estado para controlar a habilitação dos botões quando so 1 esta selecionado
-    const [oneButtonsDisabled, setOneButtonsDisabled] = useState<boolean>(true);
-
-    // Estado para controlar a habilitação dos botões quando mais de um esta selecionado
-    const [multiButtonsDisabled, setMultiButtonsDisabled] = useState<boolean>(true);
 
     // Função para lidar com a seleção de linhas
     const handleRowSelection = (newSelection: any[]) => {
@@ -117,7 +159,6 @@ const PatientFetch: React.FC<PatientFetchProps> = ({ isExpanded, marginTop, onEd
         // Habilitar/desabilitar botões com base no número de linhas selecionadas
         setMultiButtonsDisabled(newSelection.length < 1);
     };
-
 
     return (
         <Box>
@@ -164,7 +205,7 @@ const PatientFetch: React.FC<PatientFetchProps> = ({ isExpanded, marginTop, onEd
                 className={isExpanded ? 'disabled' : ''}
             >
                 <DataGrid
-                    rows={patientsData}
+                    rows={appointmentsData}
                     columns={columns}
                     getRowId={(row) => row.id}
                     onRowSelectionModelChange={handleRowSelection}
@@ -196,7 +237,7 @@ const PatientFetch: React.FC<PatientFetchProps> = ({ isExpanded, marginTop, onEd
             <DialogConfirm
                 open={confirmDialogOpen}
                 title="Confirm Delete"
-                message="Are you sure you want to delete the selected patients?"
+                message="Are you sure you want to delete the selected appointments?"
                 severity="error"
                 onClose={() => setConfirmDialogOpen(false)}
                 onConfirm={handleDeleteConfirm}
@@ -205,4 +246,4 @@ const PatientFetch: React.FC<PatientFetchProps> = ({ isExpanded, marginTop, onEd
     );
 };
 
-export default PatientFetch;
+export default AppointmentFetch;
