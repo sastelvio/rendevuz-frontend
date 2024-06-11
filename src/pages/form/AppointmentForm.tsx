@@ -20,7 +20,7 @@ type FormState = {
     description: string;
     schedule: string;
     patientResponse: Patient;
-    patientId: string; // Adiciona o campo patientId
+    patientId: string;
 };
 
 const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit, editMode, formData }) => {
@@ -123,8 +123,21 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit, editMode, f
             });
         }
     };
-  
-    
+
+    const [cleared, setCleared] = React.useState<boolean>(false);
+
+    useEffect(() => {
+        if (cleared) {
+            const timeout = setTimeout(() => {
+                setCleared(false);
+            }, 1500);
+
+            return () => clearTimeout(timeout);
+        }
+        return () => { };
+    }, [cleared]);
+
+
     const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         const { id, description, schedule, patientResponse } = formState;
@@ -194,7 +207,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit, editMode, f
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="Choose a patient"
+                                label="Patient"
                                 inputProps={{
                                     ...params.inputProps,
                                     autoComplete: 'new-password', // disable autocomplete and autofill
@@ -206,7 +219,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit, editMode, f
                     />
                 </Grid>
                 <Grid item xs={12}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>                        
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateTimePicker
                             value={schedule}
                             sx={{
@@ -224,11 +237,14 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({ onSubmit, editMode, f
                             }}
                             onChange={handleDateChange}
                             disablePast
-                            label="Select the Date and Time"
+                            label="Schedule"
                             viewRenderers={{
                                 hours: renderTimeViewClock,
                                 minutes: renderTimeViewClock,
                                 seconds: renderTimeViewClock,
+                            }}
+                            slotProps={{
+                                field: { clearable: true, onClear: () => setCleared(true) },
                             }}
                         />
                     </LocalizationProvider>

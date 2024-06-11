@@ -112,19 +112,11 @@ const AppointmentFetch: React.FC<AppointmentFetchProps> = ({ isExpanded, marginT
 
             if (selectedAppointment.patientResponse) {
                 formData.append('patientResponse', JSON.stringify(selectedAppointment.patientResponse));
-
-                // Imprima os dados de patientResponse no console
-                //console.log('Patient ID:', selectedAppointment.patientResponse.id);
-                //console.log('Patient Social Security:', selectedAppointment.patientResponse.socialSecurity);
-                //console.log('Patient First Name:', selectedAppointment.patientResponse.firstName);
-                //console.log('Patient Surname:', selectedAppointment.patientResponse.surname);
-                //console.log('Patient Email:', selectedAppointment.patientResponse.email);
             } else {
                 // Faça algo se a propriedade patient estiver ausente
                 console.log("Patient data not found");
             }
-            
-            onEdit(formData); // Passe o FormData para a função onEdit
+            onEdit(formData);
         }
     };
 
@@ -132,7 +124,6 @@ const AppointmentFetch: React.FC<AppointmentFetchProps> = ({ isExpanded, marginT
     //funcao para editar linha selecionada
     const handleDetails = (selectedRows: any[]) => {
         const selectedAppointment = appointmentsData.find(appointment => appointment.id === selectedRows[0]);
-
         if (selectedAppointment) {
             // Converta o objeto Appointment para FormData
             const formData = new FormData();
@@ -141,12 +132,16 @@ const AppointmentFetch: React.FC<AppointmentFetchProps> = ({ isExpanded, marginT
             }
             formData.append('description', selectedAppointment.description);
             formData.append('schedule', selectedAppointment.schedule);
-            formData.append('patient', JSON.stringify(selectedAppointment.patientResponse));
 
-            onView(formData); // Passe o FormData para a função onEdit
+            if (selectedAppointment.patientResponse) {
+                formData.append('patientResponse', JSON.stringify(selectedAppointment.patientResponse));
+            } else {
+                // Faça algo se a propriedade patient estiver ausente
+                console.log("Patient data not found");
+            }
+            onView(formData);
         }
     };
-
 
 
     // Função para lidar com a seleção de linhas

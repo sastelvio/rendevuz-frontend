@@ -35,7 +35,6 @@ const Appointment = () => {
     const navigate = useNavigate();
     const userProfileInfo = useAppSelector((state) => state.auth.basicUserInfo);
 
-
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [open, setOpen] = useState(true);
 
@@ -109,12 +108,12 @@ const Appointment = () => {
     const handleEditAppointment = (appointmentData: FormData) => {
         setIsEditing(true);
         setSelectedAppointment(appointmentData);
-        expandBox('70%', 650);  
+        expandBox('70%', 650);
     };
 
     const handleViewAppointment = (appointmentData: FormData) => {
-        setViewingAppointment(appointmentData); // Define o estado para exibir o AppointmentView
-        expandBox('50%', 400);
+        setViewingAppointment(appointmentData);
+        expandBox('50%', 500);
     };
 
     // Função para aumentar a altura e mover os elementos abaixo
