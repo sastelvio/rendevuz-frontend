@@ -1,7 +1,7 @@
 import Sidebar from '../layouts/Sidebar';
 import Header from '../layouts/Header';
 import Footer from '../layouts/Footer';
-import { Avatar, Box, Button, Card, CardContent, CssBaseline, Fab, Grid, IconButton, Input, TextField, Toolbar, Typography } from '@mui/material';
+import { Avatar, Box, Button, Card, CardContent, CssBaseline, Fab, FormControl, FormHelperText, Grid, IconButton, Input, InputLabel, TextField, Toolbar, Typography } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -77,24 +77,6 @@ interface CustomProps {
     withoutUnderline?: boolean;
 }
 
-const PhoneMaskCustom = React.forwardRef<HTMLInputElement, CustomProps>(
-    function PhoneMaskCustom(props, ref) {
-        const { onChange, name, value, withoutUnderline, ...other } = props;
-        return (
-            <IMaskInput
-                {...other}
-                mask="00 00 00 00 00"
-                definitions={{
-                    '#': /[1-9]/,
-                }}
-                inputRef={ref}
-                onAccept={(value: any) => onChange({ target: { name, value } } as React.ChangeEvent<HTMLInputElement>)}
-                overwrite
-            />
-        );
-    }
-);
-
 const EmailMaskCustom = React.forwardRef<HTMLInputElement, CustomProps>(
     function EmailMaskCustom(props, ref) {
         const { onChange, value, name, withoutUnderline, ...other } = props;
@@ -116,6 +98,14 @@ const EmailMaskCustom = React.forwardRef<HTMLInputElement, CustomProps>(
     },
 );
 
+const formatPhoneNumber = (phone: any) => {
+    if (!phone) return '';
+    const phoneStr = String(phone);
+    // Remove espaços existentes
+    const phoneNumber = phoneStr.replace(/\s+/g, '');
+    // Adiciona espaços a cada dois dígitos
+    return phoneNumber.replace(/(\d{2})(?=\d)/g, '$1 ');
+};
 
 const Profile = () => {
     const dispatch: AppDispatch = useAppDispatch();
@@ -227,14 +217,21 @@ const Profile = () => {
         }));
     }, []);
 
-
     const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        ; if (editedUserInfo && userId) {
+        if (editedUserInfo && userId) {
+            // Remover espaços adicionados pela máscara
+            const sanitizedUserInfo = {
+                ...editedUserInfo,
+                phone: editedUserInfo.phone.replace(/\s+/g, ''),
+                email: editedUserInfo.email.replace(/\s+/g, '')
+            };
+
             const updatedUser: User = {
                 id: userId,
-                ...editedUserInfo
+                ...sanitizedUserInfo
             };
+
             await dispatch(update(updatedUser));
             exitEditMode();
             dispatch(getUser());
@@ -256,6 +253,11 @@ const Profile = () => {
     const handleInstagramClick = (user: string) => {
         window.open(`https://www.instagram.com/${user}`, '_blank', 'noopener,noreferrer');
     };
+
+    const [isFocused, setIsFocused] = React.useState(false);
+
+    const handleFocus = () => setIsFocused(true);
+    const handleBlur = () => setIsFocused(false);
 
 
     return (
@@ -436,28 +438,52 @@ const Profile = () => {
                                                                                 marginBottom: 2,
                                                                             }}
                                                                         />
-
-
                                                                     )}
                                                                 </Grid>
                                                                 <Grid item xs={12} sm={12} container justifyContent="left">
                                                                     {isEditMode ? (
-                                                                        <TextField
-                                                                            key={'phone'}
-                                                                            fullWidth
-                                                                            name="phone"
-                                                                            label="Phone"
-                                                                            size="small"
-                                                                            value={editedUserInfo.phone}
-                                                                            onChange={handleChange}
-                                                                            InputProps={{
-                                                                                inputComponent: PhoneMaskCustom as any,
-                                                                            }}                                                                            
-                                                                        />
+                                                                        <>
+                                                                            <FormControl fullWidth variant="outlined" onFocus={handleFocus} onBlur={handleBlur} sx={{ mb: 2 }}>
+                                                                                <InputLabel
+                                                                                    shrink={Boolean(editedUserInfo.phone) || isFocused}
+                                                                                    htmlFor="phone-mask-input"
+                                                                                    sx={{
+                                                                                        bgcolor: 'background.paper',
+                                                                                        color: isFocused ? '#1976d2' : 'rgba(0, 0, 0, 0.87)',
+                                                                                        px: 1,
+                                                                                        top: (isFocused || Boolean(editedUserInfo.phone)) ? '-2px' : '-8px',
+                                                                                    }}                                                                                    
+                                                                                >
+                                                                                    Phone
+                                                                                </InputLabel>
+                                                                                <IMaskInput
+                                                                                    name="phone"
+                                                                                    value={String(editedUserInfo?.phone)}
+                                                                                    onChange={handleChange}
+                                                                                    mask="00 00 00 00 0"
+                                                                                    definitions={{
+                                                                                        '#': /[1-9]/,
+                                                                                    }}
+                                                                                    style={{
+                                                                                        width: '100%',
+                                                                                        height: '40px',
+                                                                                        padding: '8.5px 14px',
+                                                                                        fontSize: 'medium',
+                                                                                        borderRadius: '4px',
+                                                                                        border: isFocused ? '2px solid #1976d2' : '1px solid rgba(0, 0, 0, 0.23)',
+                                                                                        outline: 'none',
+                                                                                    }}
+                                                                                    onFocus={handleFocus}
+                                                                                    onBlur={handleBlur}
+                                                                                    onAccept={(value: any) => handleChange({ target: { name: 'phone', value: String(value) } } as React.ChangeEvent<HTMLInputElement>)}
+                                                                                    overwrite
+                                                                                />
+                                                                            </FormControl>
+                                                                        </>
                                                                     ) : (
                                                                         <Typography variant="subtitle2" sx={{ marginBottom: 2, }}>
                                                                             <>
-                                                                                <span style={{ fontWeight: 'bold' }}>Phone:</span> (xx) {userProfileInfo?.phone}
+                                                                                <span style={{ fontWeight: 'bold' }}>Phone:</span> {formatPhoneNumber(userProfileInfo?.phone)}
                                                                             </>
                                                                         </Typography>
                                                                     )}
