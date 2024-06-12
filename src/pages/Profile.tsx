@@ -1,7 +1,7 @@
 import Sidebar from '../layouts/Sidebar';
 import Header from '../layouts/Header';
 import Footer from '../layouts/Footer';
-import { Avatar, Box, Button, Card, CardContent, CssBaseline, Fab, Grid, IconButton, TextField, Toolbar, Typography } from '@mui/material';
+import { Avatar, Box, Button, Card, CardContent, CssBaseline, Fab, Grid, IconButton, Input, TextField, Toolbar, Typography } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -39,6 +39,9 @@ import '../layouts/style/General.css'
 
 import { update } from '../slices/authSlice';
 import { useSelector } from 'react-redux';
+import React from 'react';
+
+import { IMaskInput } from 'react-imask';
 
 const drawerWidth = 240;
 const collapsedWidth = 73;
@@ -67,7 +70,51 @@ const defaultUserProfileInfo: UserProfileData = {
     role: ''
 };
 
+interface CustomProps {
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    name: string;
+    value: string;
+    withoutUnderline?: boolean;
+}
 
+const PhoneMaskCustom = React.forwardRef<HTMLInputElement, CustomProps>(
+    function PhoneMaskCustom(props, ref) {
+        const { onChange, name, value, withoutUnderline, ...other } = props;
+        return (
+            <IMaskInput
+                {...other}
+                mask="00 00 00 00 00"
+                definitions={{
+                    '#': /[1-9]/,
+                }}
+                inputRef={ref}
+                onAccept={(value: any) => onChange({ target: { name, value } } as React.ChangeEvent<HTMLInputElement>)}
+                overwrite
+            />
+        );
+    }
+);
+
+const EmailMaskCustom = React.forwardRef<HTMLInputElement, CustomProps>(
+    function EmailMaskCustom(props, ref) {
+        const { onChange, value, name, withoutUnderline, ...other } = props;
+        return (
+            <TextField
+                {...other}
+                size="small"
+                label="Email"
+                required
+                fullWidth
+                value={value}
+                onChange={onChange}
+                name={name}
+                inputRef={ref}
+                sx={withoutUnderline ? { borderBottom: 'none' } : undefined} // Remover o underline se withoutUnderline for verdadeiro
+                variant="outlined"
+            />
+        );
+    },
+);
 
 
 const Profile = () => {
@@ -396,13 +443,16 @@ const Profile = () => {
                                                                 <Grid item xs={12} sm={12} container justifyContent="left">
                                                                     {isEditMode ? (
                                                                         <TextField
-                                                                            key="phone"
+                                                                            key={'phone'}
                                                                             fullWidth
                                                                             name="phone"
                                                                             label="Phone"
                                                                             size="small"
-                                                                            value={editedUserInfo?.phone}
+                                                                            value={editedUserInfo.phone}
                                                                             onChange={handleChange}
+                                                                            InputProps={{
+                                                                                inputComponent: PhoneMaskCustom as any,
+                                                                            }}                                                                            
                                                                         />
                                                                     ) : (
                                                                         <Typography variant="subtitle2" sx={{ marginBottom: 2, }}>
@@ -414,15 +464,11 @@ const Profile = () => {
                                                                 </Grid>
                                                                 <Grid item xs={12} sm={12} container justifyContent="left">
                                                                     {isEditMode ? (
-                                                                        <TextField
-                                                                            key={'email'}
-                                                                            fullWidth
+                                                                        <EmailMaskCustom
                                                                             name="email"
-                                                                            label="Email"
-                                                                            size="small"
-                                                                            required
-                                                                            value={editedUserInfo?.email}
+                                                                            value={editedUserInfo.email}
                                                                             onChange={handleChange}
+                                                                            withoutUnderline // Definir withoutUnderline como verdadeiro para remover o underline
                                                                         />
                                                                     ) : (
                                                                         <Typography variant="subtitle2" sx={{ marginBottom: 2, }}>
