@@ -43,7 +43,6 @@ const AppointmentFetch: React.FC<AppointmentFetchProps> = ({ isExpanded, marginT
     }, [dispatch]);
 
     const appointmentsData = useAppSelector((state) => state.appointment.appointments);
-    const patientsData = useAppSelector((state) => state.patient.patients);
     const [confirmDialogOpen, setConfirmDialogOpen] = useState<boolean>(false);
 
     // Adicione este estado ao componente Appointment
@@ -70,34 +69,6 @@ const AppointmentFetch: React.FC<AppointmentFetchProps> = ({ isExpanded, marginT
         setConfirmDialogOpen(false);
     };
 
-    // Função para editar linha selecionada
-    /*
-    const handleEdit = (selectedRows: any[]) => {
-        const selectedAppointment = appointmentsData.find(appointment => appointment.id === selectedRows[0]);
-
-        if (selectedAppointment) {
-            // Converta o objeto Appointment para FormData
-            const formData = new FormData();
-            if (selectedAppointment.id !== undefined) {
-                formData.append('id', selectedAppointment.id.toString());
-
-            }
-            formData.append('description', selectedAppointment.description);
-            formData.append('schedule', selectedAppointment.schedule);
-            if (selectedAppointment && selectedAppointment.patient) {
-                formData.append('patient', JSON.stringify(selectedAppointment.patient));
-            } else {
-                // Faça algo se a propriedade patient estiver ausente
-                console.log("Patient data not found");
-            }
-
-
-            console.log(selectedAppointment);
-            onEdit(formData); // Passe o FormData para a função onEdit
-
-        }
-    };
-    */
     const handleEdit = (selectedRows: any[]) => {
         const selectedAppointment = appointmentsData.find(appointment => appointment.id === selectedRows[0]);
 

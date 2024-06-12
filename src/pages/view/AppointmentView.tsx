@@ -9,7 +9,6 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Patient } from '../../slices/types';
-import dayjs, { Dayjs } from 'dayjs';
 
 interface AppointmentViewProps {
     formData: FormData;
@@ -38,8 +37,6 @@ const AppointmentView: React.FC<AppointmentViewProps> = ({ formData }) => {
         patientId: '',
     });
 
-    const [schedule, setSchedule] = useState<Dayjs | null>(null);
-
     useEffect(() => {
         if (formData) {
             const patientData = formData.get('patientResponse');
@@ -67,7 +64,6 @@ const AppointmentView: React.FC<AppointmentViewProps> = ({ formData }) => {
                 patientResponse: parsedPatientData,
                 patientId: parsedPatientData.id
             });
-            setSchedule(formData.get('schedule') ? dayjs(formData.get('schedule') as string) : null);
         }
     }, [formData]);
 

@@ -1,13 +1,13 @@
 import Sidebar from '../layouts/Sidebar';
 import Header from '../layouts/Header';
 import Footer from '../layouts/Footer';
-import { Avatar, Box, Card, CardContent, CssBaseline, Fab, Grid, IconButton, Toolbar, Typography } from '@mui/material';
+import { Avatar, Box, Button, Card, CardContent, CssBaseline, Fab, Grid, IconButton, TextField, Toolbar, Typography } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks/redux-hooks';
-import { logout } from '../slices/authSlice';
-import { AppDispatch } from '../store';
+import { getUser, logout } from '../slices/authSlice';
+import { AppDispatch, RootState } from '../store';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
@@ -30,7 +30,15 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PaymentIcon from '@mui/icons-material/Payment';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import KeyIcon from '@mui/icons-material/VpnKey';
+import EditIcon from "@mui/icons-material/Edit";
+import SendIcon from "@mui/icons-material/Send";
+import ClearAllIcon from '@mui/icons-material/ClearAll';
+import { User, UserProfileData } from '../slices/types';
 
+import '../layouts/style/General.css'
+
+import { update } from '../slices/authSlice';
+import { useSelector } from 'react-redux';
 
 const drawerWidth = 240;
 const collapsedWidth = 73;
@@ -44,14 +52,39 @@ const items = [
     { icon: <KeyIcon sx={{ color: 'white' }} />, text: "New card added for order #4395133", date: "18 DEC 4:54 AM", backgroundColor: pink[500] }
 ];
 
+const defaultUserProfileInfo: UserProfileData = {
+    username: '',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    about: '',
+    location: '',
+    link_linkedin: '',
+    link_facebook: '',
+    link_twitter: '',
+    link_instagram: '',
+    role: ''
+};
+
+
+
 
 const Profile = () => {
     const dispatch: AppDispatch = useAppDispatch();
+
+    const userProfile = useSelector((state: RootState) => state.auth.userProfileData);
+    const userId = useSelector((state: RootState) => state.auth.basicUserInfo?.id);
+
+    useEffect(() => {
+        dispatch(getUser());
+    }, [dispatch]);
+
     const navigate = useNavigate();
-    const userProfileInfo = useAppSelector((state) => state.auth.basicUserInfo);
+    const userProfileInfo = useAppSelector((state) => state.auth.userProfileData) || defaultUserProfileInfo;
+
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [open, setOpen] = useState(true);
-    const [fabVisible, setFabVisible] = useState(false);
 
     const handleLogout = async () => {
         try {
@@ -120,6 +153,63 @@ const Profile = () => {
         textAlign: 'left',
         color: theme.palette.text.secondary,
     }));
+
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editedUserInfo, setEditedUserInfo] = useState<UserProfileData>(defaultUserProfileInfo);
+
+
+    const enterEditMode = () => {
+        setIsEditMode(true);
+    };
+
+    useEffect(() => {
+        setEditedUserInfo(userProfileInfo);
+    }, [userProfileInfo]);
+
+    const exitEditMode = () => {
+        setIsEditMode(false);
+        //setEditedUserInfo(userProfileInfo);
+        setEditedUserInfo(userProfile || defaultUserProfileInfo);
+    };
+
+    const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        setEditedUserInfo((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
+    }, []);
+
+
+    const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        ; if (editedUserInfo && userId) {
+            const updatedUser: User = {
+                id: userId,
+                ...editedUserInfo
+            };
+            await dispatch(update(updatedUser));
+            exitEditMode();
+            dispatch(getUser());
+        }
+    };
+
+    const handleLinkedInClick = (user: string) => {
+        window.open(`https://www.linkedin.com/in/${user}`, '_blank', 'noopener,noreferrer');
+    };
+
+    const handleFacebookClick = (user: string) => {
+        window.open(`https://www.facebook.com/${user}`, '_blank', 'noopener,noreferrer');
+    };
+
+    const handleTwitterClick = (user: string) => {
+        window.open(`https://www.x.com/${user}`, '_blank', 'noopener,noreferrer');
+    };
+
+    const handleInstagramClick = (user: string) => {
+        window.open(`https://www.instagram.com/${user}`, '_blank', 'noopener,noreferrer');
+    };
+
 
     return (
         <Box sx={{ display: "flex", width: '100%', height: '100vh', overflow: 'hidden' }}>
@@ -192,13 +282,48 @@ const Profile = () => {
                                                 <Card sx={{ width: '100%', backgroundColor: 'transparent', boxShadow: 'none', }}>
                                                     <CardContent sx={{ marginTop: 0 }}>
                                                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                            <Avatar sx={{ marginRight: 2, width: 70, height: 70, fontSize: 20 }}>
+                                                            <Avatar sx={{ marginRight: 2, width: 90, height: 90, fontSize: 20 }}>
                                                                 {userProfileInfo ? `${userProfileInfo.firstName.charAt(0)} ${userProfileInfo.lastName.charAt(0)}` : 'Loading...'}
                                                             </Avatar>
                                                             <Box>
-                                                                <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                                                    {userProfileInfo ? `${userProfileInfo.firstName} ${userProfileInfo.lastName}` : 'Loading...'}
-                                                                </Typography>
+                                                                {isEditMode ? (
+                                                                    <>
+                                                                        <Grid container spacing={2} >
+                                                                            <Grid item xs={6} sm={6} container justifyContent="center">
+                                                                                <TextField
+                                                                                    name="firstName"
+                                                                                    label="First Name"
+                                                                                    size="small"
+                                                                                    required
+                                                                                    value={editedUserInfo?.firstName}
+                                                                                    onChange={handleChange}
+                                                                                />
+                                                                            </Grid>
+                                                                            <Grid item xs={6} sm={6} container justifyContent="center">
+                                                                                <TextField
+                                                                                    name="lastName"
+                                                                                    label="Last Name"
+                                                                                    size="small"
+                                                                                    required
+                                                                                    value={editedUserInfo?.lastName}
+                                                                                    onChange={handleChange}
+                                                                                />
+                                                                            </Grid>
+                                                                        </Grid>
+                                                                    </>
+                                                                ) : (
+                                                                    <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
+                                                                        <>
+                                                                            <span style={{ fontWeight: 'bold', fontSize: 25 }}>
+                                                                                {userProfileInfo ? `${userProfileInfo.firstName} ${userProfileInfo.lastName}` : 'Loading...'}
+                                                                            </span>
+                                                                            <IconButton color="inherit" size="small" sx={{ marginLeft: 1 }} onClick={enterEditMode}>
+                                                                                <EditIcon fontSize="small" />
+                                                                            </IconButton>
+                                                                        </>
+                                                                    </Typography>
+                                                                )}
+
                                                                 <Typography variant="body2" color="textSecondary">
                                                                     @{userProfileInfo ? userProfileInfo.username : 'Loading...'}
                                                                 </Typography>
@@ -215,66 +340,306 @@ const Profile = () => {
                                                 <Card sx={{ width: '100%', backgroundColor: 'transparent', boxShadow: 'none', }}>
                                                     <CardContent sx={{ marginTop: 0 }}>
                                                         <Box sx={{ width: '100%', }}>
-                                                            <Stack spacing={2} >
-                                                                <Item sx={{ backgroundColor: 'transparent', boxShadow: 'none', }}>
+                                                            <Grid container spacing={2} >
+                                                                <Grid item xs={12} sm={12} container justifyContent="left">
                                                                     <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                                                                         Profile Information
                                                                     </Typography>
-                                                                </Item>
-                                                                <Item sx={{ backgroundColor: 'transparent', boxShadow: 'none', }}>
-                                                                    <Typography variant="subtitle2">
-                                                                        Hi, Decisions: If you can’t decide, the answer is no. If two equally difficult paths,
-                                                                        choose the one more painful in the short term (pain avoidance is creating an illusion of equality).
-                                                                    </Typography>
-                                                                </Item>
-                                                                <Item sx={{ backgroundColor: 'transparent', boxShadow: 'none', }}>
-                                                                    <Typography variant="subtitle2">
-                                                                        <span style={{ fontWeight: 'bold' }}>Full Name:</span> Full Name of the User
-                                                                    </Typography>
-                                                                </Item>
-                                                                <Item sx={{ backgroundColor: 'transparent', boxShadow: 'none', }}>
-                                                                    <Typography variant="subtitle2">
-                                                                        <span style={{ fontWeight: 'bold' }}>Mobile:</span> (xx) xxx xxxx xxx
-                                                                    </Typography>
-                                                                </Item>
-                                                                <Item sx={{ backgroundColor: 'transparent', boxShadow: 'none', }}>
-                                                                    <Typography variant="subtitle2">
-                                                                        <span style={{ fontWeight: 'bold' }}>Email:</span> user@mail.com
-                                                                    </Typography>
-                                                                </Item>
-                                                                <Item sx={{ backgroundColor: 'transparent', boxShadow: 'none', }}>
-                                                                    <Typography variant="subtitle2">
-                                                                        <span style={{ fontWeight: 'bold' }}>Location:</span> City, Country
-                                                                    </Typography>
-                                                                </Item>
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={12} container justifyContent="left">
+                                                                    {isEditMode ? (
+                                                                        <TextField
+                                                                            key="about"
+                                                                            fullWidth
+                                                                            multiline
+                                                                            size="small"
+                                                                            rows={3}
+                                                                            name="about"
+                                                                            label="About"
+                                                                            value={editedUserInfo?.about}
+                                                                            onChange={handleChange}
+                                                                        />
+                                                                    ) : (
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            multiline
+                                                                            size="small"
+                                                                            rows={3}
+                                                                            name="about"
+                                                                            value={editedUserInfo?.about}
+                                                                            InputProps={{
+                                                                                readOnly: true,
+                                                                                sx: {
+                                                                                    border: 'none',
+                                                                                },
+                                                                            }}
+                                                                            InputLabelProps={{
+                                                                                sx: {
+                                                                                    border: 'none',
+                                                                                },
+                                                                            }}
+                                                                            variant="outlined"
+                                                                            sx={{
+                                                                                '& .MuiOutlinedInput-notchedOutline': {
+                                                                                    border: 'none',
+                                                                                },
+                                                                                '& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline': {
+                                                                                    borderColor: 'transparent',
+                                                                                },
+                                                                                marginBottom: 2,
+                                                                            }}
+                                                                        />
+
+
+                                                                    )}
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={12} container justifyContent="left">
+                                                                    {isEditMode ? (
+                                                                        <TextField
+                                                                            key="phone"
+                                                                            fullWidth
+                                                                            name="phone"
+                                                                            label="Phone"
+                                                                            size="small"
+                                                                            value={editedUserInfo?.phone}
+                                                                            onChange={handleChange}
+                                                                        />
+                                                                    ) : (
+                                                                        <Typography variant="subtitle2" sx={{ marginBottom: 2, }}>
+                                                                            <>
+                                                                                <span style={{ fontWeight: 'bold' }}>Phone:</span> (xx) {userProfileInfo?.phone}
+                                                                            </>
+                                                                        </Typography>
+                                                                    )}
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={12} container justifyContent="left">
+                                                                    {isEditMode ? (
+                                                                        <TextField
+                                                                            key={'email'}
+                                                                            fullWidth
+                                                                            name="email"
+                                                                            label="Email"
+                                                                            size="small"
+                                                                            required
+                                                                            value={editedUserInfo?.email}
+                                                                            onChange={handleChange}
+                                                                        />
+                                                                    ) : (
+                                                                        <Typography variant="subtitle2" sx={{ marginBottom: 2, }}>
+                                                                            <span style={{ fontWeight: 'bold' }}>Email:</span> {userProfileInfo?.email}
+                                                                        </Typography>
+                                                                    )}
+                                                                </Grid>
+                                                                <Grid item xs={12} sm={12} container justifyContent="left">
+                                                                    {isEditMode ? (
+                                                                        <TextField
+                                                                            fullWidth
+                                                                            name="location"
+                                                                            label="Location"
+                                                                            size="small"
+                                                                            value={editedUserInfo?.location}
+                                                                            onChange={handleChange}
+                                                                        />
+                                                                    ) : (
+                                                                        <Typography variant="subtitle2" sx={{ marginBottom: 2, }}>
+                                                                            <span style={{ fontWeight: 'bold' }}>Location:</span> {userProfileInfo?.location}
+                                                                        </Typography>
+                                                                    )}
+                                                                </Grid>
+                                                                {isEditMode ? (
+                                                                    <>
+                                                                        <Grid item xs={12} sm={1} container justifyContent="center"
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'left'
+                                                                            }}
+                                                                        >
+                                                                            <LinkedInIcon fontSize="large" />
+                                                                        </Grid>
+                                                                        <Grid item xs={12} sm={11} container justifyContent="center">
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                name="link_linkedin"
+                                                                                label="Linkedin"
+                                                                                placeholder='paulsmith'
+                                                                                size="small"
+                                                                                value={editedUserInfo?.link_linkedin}
+                                                                                onChange={handleChange}
+                                                                            />
+                                                                        </Grid>
+                                                                        <Grid
+                                                                            item
+                                                                            xs={12}
+                                                                            sm={1}
+                                                                            container
+                                                                            justifyContent="center"
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'left'
+                                                                            }}
+                                                                        >
+                                                                            <FacebookIcon fontSize="large" />
+                                                                        </Grid>
+                                                                        <Grid item xs={12} sm={11} container justifyContent="center">
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                name="link_facebook"
+                                                                                label="Facebook"
+                                                                                placeholder='paulsmith'
+                                                                                size="small"
+                                                                                value={editedUserInfo?.link_facebook}
+                                                                                onChange={handleChange}
+                                                                            />
+                                                                        </Grid>
+                                                                        <Grid
+                                                                            item
+                                                                            xs={12}
+                                                                            sm={1}
+                                                                            container
+                                                                            justifyContent="center"
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'left'
+                                                                            }}
+                                                                        >
+                                                                            <XIcon fontSize="large" />
+                                                                        </Grid>
+                                                                        <Grid item xs={12} sm={11} container justifyContent="center">
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                name="link_twitter"
+                                                                                label="Twitter (X)"
+                                                                                placeholder='@paulsmith'
+                                                                                size="small"
+                                                                                value={editedUserInfo?.link_twitter}
+                                                                                onChange={handleChange}
+                                                                            />
+                                                                        </Grid>
+                                                                        <Grid
+                                                                            item
+                                                                            xs={12}
+                                                                            sm={1}
+                                                                            container
+                                                                            justifyContent="center"
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'left'
+                                                                            }}
+                                                                        >
+                                                                            <InstagramIcon fontSize="large" />
+                                                                        </Grid>
+                                                                        <Grid item xs={12} sm={11} container justifyContent="center">
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                name="link_instagram"
+                                                                                label="Instagram"
+                                                                                placeholder='paulsmith'
+                                                                                size="small"
+                                                                                value={editedUserInfo?.link_instagram}
+                                                                                onChange={handleChange}
+                                                                            />
+                                                                        </Grid>
+                                                                    </>
+                                                                ) : (
+                                                                    <Grid item xs={12} sm={11} container justifyContent="left">
+                                                                        <Typography
+                                                                            variant="subtitle2"
+                                                                            sx={{
+                                                                                display: 'flex',
+                                                                                alignItems: 'center',
+                                                                                justifyContent: 'left'
+                                                                            }}
+                                                                        >
+                                                                            <span style={{ fontWeight: 'bold' }}>Social Media:</span>
+                                                                            {userProfileInfo?.link_linkedin && (
+                                                                                <IconButton
+                                                                                    color="inherit"
+                                                                                    sx={{ fontSize: 15 }}
+                                                                                    onClick={() => handleLinkedInClick(userProfileInfo?.link_linkedin)}
+                                                                                >
+                                                                                    <LinkedInIcon fontSize="medium" />
+                                                                                </IconButton>
+                                                                            )}
+                                                                            {userProfileInfo?.link_facebook && (
+                                                                                <IconButton
+                                                                                    color="inherit"
+                                                                                    sx={{ fontSize: 15 }}
+                                                                                    onClick={() => handleFacebookClick(userProfileInfo?.link_facebook)}
+                                                                                >
+                                                                                    <FacebookIcon fontSize="medium" />
+                                                                                </IconButton>
+                                                                            )}
+                                                                            {userProfileInfo?.link_twitter && (
+                                                                                <IconButton
+                                                                                    color="inherit"
+                                                                                    sx={{ fontSize: 15 }}
+                                                                                    onClick={() => handleTwitterClick(userProfileInfo?.link_twitter)}
+                                                                                >
+                                                                                    <XIcon fontSize="small" />
+                                                                                </IconButton>
+                                                                            )}
+                                                                            {userProfileInfo?.link_instagram && (
+                                                                                <IconButton
+                                                                                    color="inherit"
+                                                                                    sx={{ fontSize: 15 }}
+                                                                                    onClick={() => handleInstagramClick(userProfileInfo?.link_instagram)}
+                                                                                >
+                                                                                    <InstagramIcon fontSize="medium" />
+                                                                                </IconButton>
+                                                                            )}
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                )}
+                                                            </Grid>
+                                                            <Stack spacing={2} >
+
+
                                                                 <Item
                                                                     sx={{
                                                                         backgroundColor: 'transparent',
                                                                         boxShadow: 'none',
                                                                     }}
                                                                 >
-                                                                    <Typography
-                                                                        variant="subtitle2"
-                                                                        sx={{
-                                                                            display: 'flex',
-                                                                            alignItems: 'center',
-                                                                            justifyContent: 'left',
-                                                                        }}
-                                                                    >
-                                                                        <span style={{ fontWeight: 'bold' }}>Social Media:</span>
-                                                                        <IconButton color="inherit" sx={{ fontSize: 15 }}>
-                                                                            <LinkedInIcon fontSize="medium" />
-                                                                        </IconButton>
-                                                                        <IconButton color="inherit" sx={{ fontSize: 15 }}>
-                                                                            <FacebookIcon fontSize="medium" />
-                                                                        </IconButton>
-                                                                        <IconButton color="inherit" sx={{ fontSize: 15 }}>
-                                                                            <XIcon fontSize="small" />
-                                                                        </IconButton>
-                                                                        <IconButton color="inherit" sx={{ fontSize: 15 }}>
-                                                                            <InstagramIcon fontSize="medium" />
-                                                                        </IconButton>
-                                                                    </Typography>
+
+                                                                </Item>
+                                                                <Item
+                                                                    sx={{
+                                                                        backgroundColor: 'transparent',
+                                                                        boxShadow: 'none',
+                                                                        textAlign: 'right',
+                                                                    }}>
+                                                                    {isEditMode && (
+                                                                        <>
+                                                                            <Button
+                                                                                variant="outlined"
+                                                                                color="primary"
+                                                                                sx={{
+                                                                                    marginLeft: 2,
+                                                                                    width: '150px'
+                                                                                }}
+                                                                                onClick={exitEditMode}
+                                                                                startIcon={<ClearAllIcon />}
+                                                                            >
+                                                                                Cancel
+                                                                            </Button>
+                                                                            <Button
+                                                                                variant="contained"
+                                                                                color="success"
+                                                                                sx={{
+                                                                                    marginLeft: 2,
+                                                                                    width: '150px'
+                                                                                }}
+                                                                                onClick={handleSubmit}
+                                                                                endIcon={<SendIcon />}
+                                                                            >
+                                                                                Update
+                                                                            </Button>
+                                                                        </>
+                                                                    )}
                                                                 </Item>
                                                             </Stack>
                                                         </Box>
@@ -406,7 +771,7 @@ const Profile = () => {
                 </Fab>
 
             </Box >
-        </Box>
+        </Box >
     );
 };
 
