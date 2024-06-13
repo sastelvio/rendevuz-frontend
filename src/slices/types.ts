@@ -36,3 +36,17 @@ export type UserProfileData = {
     link_instagram: string;
     role: string;
 };
+
+
+
+//COUNTRIES
+export type Country = {
+    code: string;
+    name: string;
+    flag: string;
+  };
+  
+  export type OnSelect = (country: Country) => void;
+  
+  export type Countries = Country[];
+  

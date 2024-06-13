@@ -43,6 +43,9 @@ import React from 'react';
 
 import { IMaskInput } from 'react-imask';
 
+import ReactCountryFlagsSelect from 'react-country-flags-select';
+
+
 const drawerWidth = 240;
 const collapsedWidth = 73;
 
@@ -107,7 +110,8 @@ const formatPhoneNumber = (phone: any) => {
     return phoneNumber.replace(/(\d{2})(?=\d)/g, '$1 ');
 };
 
-const Profile = () => {
+
+const Profile: React.FC = () => {
     const dispatch: AppDispatch = useAppDispatch();
 
     const userProfile = useSelector((state: RootState) => state.auth.userProfileData);
@@ -259,6 +263,16 @@ const Profile = () => {
     const handleFocus = () => setIsFocused(true);
     const handleBlur = () => setIsFocused(false);
 
+    const [selectedCountry, setSelectedCountry] = useState<any>(null);
+
+
+
+    const handleSelectCountry = (country: any) => {
+        setSelectedCountry(country);
+        if(country){
+            setEditedUserInfo({ ...editedUserInfo, location: country.label });
+        }        
+    };
 
     return (
         <Box sx={{ display: "flex", width: '100%', height: '100vh', overflow: 'hidden' }}>
@@ -452,7 +466,7 @@ const Profile = () => {
                                                                                         color: isFocused ? '#1976d2' : 'rgba(0, 0, 0, 0.87)',
                                                                                         px: 1,
                                                                                         top: (isFocused || Boolean(editedUserInfo.phone)) ? '-2px' : '-8px',
-                                                                                    }}                                                                                    
+                                                                                    }}
                                                                                 >
                                                                                     Phone
                                                                                 </InputLabel>
@@ -504,14 +518,14 @@ const Profile = () => {
                                                                 </Grid>
                                                                 <Grid item xs={12} sm={12} container justifyContent="left">
                                                                     {isEditMode ? (
-                                                                        <TextField
-                                                                            fullWidth
-                                                                            name="location"
-                                                                            label="Location"
-                                                                            size="small"
-                                                                            value={editedUserInfo?.location}
-                                                                            onChange={handleChange}
-                                                                        />
+                                                                        <>
+                                                                            <ReactCountryFlagsSelect
+                                                                                selected={selectedCountry}
+                                                                                onSelect={handleSelectCountry}
+                                                                                searchable
+                                                                                fullWidth
+                                                                            />
+                                                                        </>
                                                                     ) : (
                                                                         <Typography variant="subtitle2" sx={{ marginBottom: 2, }}>
                                                                             <span style={{ fontWeight: 'bold' }}>Location:</span> {userProfileInfo?.location}
