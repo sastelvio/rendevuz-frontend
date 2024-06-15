@@ -23,11 +23,11 @@ const columns: GridColDef[] = [
         field: 'fullName',
         headerName: 'Full name',
         description: 'This column has a value getter and is not sortable.',
-        sortable: false,
+        //sortable: false,
         flex: 2,
         valueGetter: (params: GridValueGetterParams<any, any>) => `${params.row.firstName || ''} ${params.row.surname || ''}`,
     },
-    { field: 'email', headerName: 'Email', flex: 1 },
+    { field: 'email', headerName: 'Email', flex: 1.5 },
 ];
 
 const PatientFetch: React.FC<PatientFetchProps> = ({ isExpanded, marginTop, onEdit, onView }) => {

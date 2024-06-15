@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux-hooks";
 import { Box, CardContent, IconButton, Tooltip } from "@mui/material";
-import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { DataGrid, GridCellParams, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ArticleIcon from "@mui/icons-material/Article";
 import DialogConfirm from "../../components/notification/DialogConfirm";
-
+import dayjs, { Dayjs } from "dayjs";
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { fetchAppointments, deleteAppointment } from "../../slices/appointmentSlice";
 import { fetchPatients } from "../../slices/patientSlice";
 import { AppDispatch } from "../../store";
+
 
 type AppointmentFetchProps = {
     isExpanded: boolean;
@@ -17,6 +19,8 @@ type AppointmentFetchProps = {
     onEdit: (appointmentData: FormData) => void;
     onView: (appointmentData: FormData) => void;
 };
+
+dayjs.extend(relativeTime);
 
 const columns: GridColDef[] = [
     {
@@ -28,7 +32,33 @@ const columns: GridColDef[] = [
             return patientResponse ? `${patientResponse.socialSecurity} | ${patientResponse.firstName} ${patientResponse.surname}` : 'Unknown';
         }
     },
-    { field: 'schedule', headerName: 'Schedule', flex: 1 },
+    {
+        field: 'schedule',
+        headerName: 'Schedule',
+        flex: 1,
+        valueGetter: (params: GridValueGetterParams) => `${dayjs(params.row.schedule).format('YYYY-MM-DD HH:mm')} (${dayjs().to(params.row.schedule)})`,
+        renderCell: (params: GridCellParams) => {
+            const scheduleDate = dayjs(params.row.schedule);
+            const now = dayjs();
+            const differenceInMinutes = scheduleDate.diff(now, 'minute');
+
+            let color = 'green';
+            if (differenceInMinutes < 0) {
+                color = 'red';
+            } else if (differenceInMinutes <= 30) {
+                color = 'orange';
+            }
+
+            return (
+                <>
+                    {dayjs(params.row.schedule).format('YYYY-MM-DD HH:mm')} 
+                    <span style={{ color, marginLeft: '5px' }}>
+                        ({dayjs().to(params.row.schedule)})
+                    </span>
+                </>
+            );
+        }
+    },
     { field: 'description', headerName: 'Description', flex: 2, },
 ];
 
